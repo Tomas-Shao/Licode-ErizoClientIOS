@@ -13,9 +13,8 @@
 	+(void)setAllowsAnyHTTPSCertificate:(BOOL) allow forHost:(NSString*) host;
 @end
 
-static NSString *kLicodeServerURLString = @"https://chotis2.dit.upm.es/token";
-static NSString *kLicodeRoomId = @"57ced7acb831f12276f1afcc";
-static NSString *kLicodeServerTokenJSONNameSpace = @"";
+static NSString *kLicodeServerURLString = @"https://t.callt.net:8030/token";
+static NSString *kLicodeRoomId = @"60c08d333e37e620a42dc25f";
 static NSString *kLicodeServerTokenJSONField = @"";
 
 @implementation LicodeServer
@@ -49,7 +48,7 @@ static NSString *kLicodeServerTokenJSONField = @"";
 
 									if (kLicodeServerTokenJSONField.length) {
 										token = [self parseResponse:data
-													tokenNamespace:kLicodeServerTokenJSONNameSpace
+                                                     tokenNamespace:kLicodeServerTokenJSONField
 													tokenField:kLicodeServerTokenJSONField
 													autoConsumeArrays:TRUE];
 									} else {
