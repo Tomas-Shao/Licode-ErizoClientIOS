@@ -22,6 +22,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		717C9853DBF9048BC5153026 /* Pods_ErizoClientTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3077201114BF0658A5460831 /* Pods_ErizoClientTests.framework */; };
 		78353EDD1ECE4D4E00EAD85E /* ECSignalingEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 78353EDC1ECE4D4E00EAD85E /* ECSignalingEvent.m */; };
 		783A84321EF96E2100092DBC /* ECClientTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 783A84311EF96E2100092DBC /* ECClientTest.m */; };
 		785C801B1B9DE13300DD721F /* ECPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 785C80191B9DE13300DD721F /* ECPlayerView.m */; };
@@ -70,6 +71,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		04B7D879EEE4F0C713C03303 /* Pods-ErizoClientTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ErizoClientTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ErizoClientTests/Pods-ErizoClientTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3077201114BF0658A5460831 /* Pods_ErizoClientTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ErizoClientTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		780428BF1F279B0F0054E488 /* ECLicodeProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ECLicodeProtocol.h; sourceTree = "<group>"; };
 		7814A0F51B83F6E600C18A9E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 		78E539CF1B99E4F4004B63EF /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
 		B916C67F7DBD8F27E3B4F7F5 /* Pods-ErizoClient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ErizoClient.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ErizoClient/Pods-ErizoClient.debug.xcconfig"; sourceTree = "<group>"; };
 		C46FE2A8E0D86F786A534622 /* Pods-ErizoClient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ErizoClient.release.xcconfig"; path = "Pods/Target Support Files/Pods-ErizoClient/Pods-ErizoClient.release.xcconfig"; sourceTree = "<group>"; };
+		EC5F79FBCDFF955B7A549F29 /* Pods-ErizoClientTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ErizoClientTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ErizoClientTests/Pods-ErizoClientTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +143,7 @@
 			files = (
 				7876C1E91ED5F8FB0083F592 /* libicucore.tbd in Frameworks */,
 				7876C1E51ED5F8D90083F592 /* libErizoClient.a in Frameworks */,
+				717C9853DBF9048BC5153026 /* Pods_ErizoClientTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,6 +295,8 @@
 			children = (
 				B916C67F7DBD8F27E3B4F7F5 /* Pods-ErizoClient.debug.xcconfig */,
 				C46FE2A8E0D86F786A534622 /* Pods-ErizoClient.release.xcconfig */,
+				04B7D879EEE4F0C713C03303 /* Pods-ErizoClientTests.debug.xcconfig */,
+				EC5F79FBCDFF955B7A549F29 /* Pods-ErizoClientTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -306,7 +312,6 @@
 				7863E31D1B7C167400A34C50 /* Sources */,
 				7863E31E1B7C167400A34C50 /* Frameworks */,
 				7863E31F1B7C167400A34C50 /* CopyFiles */,
-				93A3E8E095EB8778BDE0AD8B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -321,9 +326,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7863E3381B7C167500A34C50 /* Build configuration list for PBXNativeTarget "ErizoClientTests" */;
 			buildPhases = (
+				7CCFBDA9894136AA77631A4A /* [CP] Check Pods Manifest.lock */,
 				7863E3281B7C167500A34C50 /* Sources */,
 				7863E3291B7C167500A34C50 /* Frameworks */,
 				7863E32A1B7C167500A34C50 /* Resources */,
+				9187B06FE5D531C1EF4FF38B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -411,19 +418,52 @@
 			shellPath = /bin/sh;
 			shellScript = "#appledoc Xcode script\n# Start constants\ncompany=\"Alvaro Gil (@zevarito)\";\ncompanyID=\"@zevarito\";\ncompanyURL=\"https://github.com/zevarito\";\ntarget=\"iphoneos\";\n#target=\"macosx\";\noutputPath=\"~/help\";\n# End constants\n/usr/local/bin/appledoc \\\n--project-name \"${PROJECT_NAME} Developers Documentation\" \\\n--project-company \"${company}\" \\\n--company-id \"${companyID}\" \\\n--output \"${PROJECT_DIR}/docs/dev\" \\\n--docset-platform-family \"${target}\" \\\n--logformat xcode \\\n--keep-intermediate-files \\\n--no-repeat-first-par \\\n--no-warn-invalid-crossref \\\n--exit-threshold 2 \\\n--keep-undocumented-objects \\\n--keep-undocumented-members \\\n--search-undocumented-doc \\\n\"${PROJECT_DIR}/ErizoClient\"\n";
 		};
-		93A3E8E095EB8778BDE0AD8B /* [CP] Copy Pods Resources */ = {
+		7CCFBDA9894136AA77631A4A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
+			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
+			inputFileListPaths = (
 			);
-			name = "[CP] Copy Pods Resources";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ErizoClientTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/../../rhinobird/IOSApp/Pods/Target Support Files/Pods-ErizoClient/Pods-ErizoClient-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9187B06FE5D531C1EF4FF38B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ErizoClientTests/Pods-ErizoClientTests-frameworks.sh",
+				"${PODS_ROOT}/PodRTC/WebRTC.framework",
+				"${BUILT_PRODUCTS_DIR}/Socket.IO-Client-Swift/SocketIO.framework",
+				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
+				"${BUILT_PRODUCTS_DIR}/OCHamcrest/OCHamcrest.framework",
+				"${BUILT_PRODUCTS_DIR}/OCMockito/OCMockito.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketIO.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OCHamcrest.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OCMockito.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ErizoClientTests/Pods-ErizoClientTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		9BDAA9D31C9628C7C7F3C596 /* [CP] Check Pods Manifest.lock */ = {
@@ -608,6 +648,7 @@
 		};
 		7863E3351B7C167500A34C50 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 04B7D879EEE4F0C713C03303 /* Pods-ErizoClientTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -665,6 +706,7 @@
 		};
 		7863E3361B7C167500A34C50 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EC5F79FBCDFF955B7A549F29 /* Pods-ErizoClientTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;

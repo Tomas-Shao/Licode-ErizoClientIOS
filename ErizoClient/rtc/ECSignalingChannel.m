@@ -56,22 +56,37 @@ typedef void(^SocketIOCallback)(NSArray* data);
                            [decodedToken objectForKey:@"host"]];
     NSURL *url = [NSURL URLWithString:urlString];
 
-    socketIO = [[SocketIOClient alloc] initWithSocketURL:url
-                                                  config:@{
-														#ifdef DEBUG
-														   @"log":@YES,
-														#else
-															@"log":@NO,
-														#endif
+//    socketIO = [[SocketIOClient alloc] initWithSocketURL:url
+//                                                  config:@{
+//														#ifdef DEBUG
+//														   @"log":@YES,
+//														#else
+//															@"log":@NO,
+//														#endif
+//                                                           @"forcePolling": @NO,
+//                                                           @"forceWebsockets": @YES,
+//                                                           @"secure": [NSNumber numberWithBool:secure],
+//                                                           @"reconnects": @NO,
+//														#ifdef BY_PASS_SELF_SIGN
+//                                                           @"selfSigned":@YES
+//														#endif
+//                                                         }];
+    SocketManager* manager = [[SocketManager alloc] initWithSocketURL:url config:@{
+                                                        #ifdef DEBUG
+                                                           @"log":@YES,
+                                                        #else
+                                                            @"log":@NO,
+                                                        #endif
                                                            @"forcePolling": @NO,
                                                            @"forceWebsockets": @YES,
                                                            @"secure": [NSNumber numberWithBool:secure],
                                                            @"reconnects": @NO,
-														#ifdef BY_PASS_SELF_SIGN
+                                                        #ifdef BY_PASS_SELF_SIGN
                                                            @"selfSigned":@YES
-														#endif
+                                                        #endif
                                                          }];
-
+    socketIO = manager.defaultSocket;
+    
     [socketIO on:@"connect" callback:^(NSArray* data, SocketAckEmitter* ack) {
         L_INFO(@"Websocket Connection success!");
         // https://github.com/lynckia/licode/blob/f2e0ccf31d09418c40929b09a3399d1cf7e9a502/erizo_controller/erizoController/models/Channel.js#L64
