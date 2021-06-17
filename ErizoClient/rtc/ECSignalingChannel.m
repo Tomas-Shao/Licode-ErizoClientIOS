@@ -95,6 +95,7 @@ typedef void(^SocketIOCallback)(NSArray* data);
                                                            @"forceWebsockets": @YES,
                                                            @"secure": [NSNumber numberWithBool:secure],
                                                            @"reconnects": @NO,
+                                                           @"connectParams": decodedToken,
                                                         #ifdef BY_PASS_SELF_SIGN
                                                            @"selfSigned":@YES
                                                         #endif
