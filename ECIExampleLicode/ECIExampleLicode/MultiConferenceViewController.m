@@ -14,10 +14,14 @@
 #import "Nuve.h"
 #import "ErizoClient.h"
 
-static NSString *roomId = @"59de889a35189661b58017a1";
-static NSString *roomName = @"IOS Demo APP";
+//static NSString *roomId = @"59de889a35189661b58017a1";
+//static NSString *roomName = @"IOS Demo APP";
+//static NSString *kDefaultUserName = @"ErizoIOS";
+static NSString *roomId = @"60c08d333e37e620a42dc25f";
+static NSString *roomName = @"basicExampleRoom";
 static NSString *kDefaultUserName = @"ErizoIOS";
-
+//basicExampleRoom
+//message: Stream subscribed, streamId: 895486720144173300, label: FykO15ls9JNNm3Mnvuu3VA4Dx61oTS6oMlFn, roomId: 60c08d333e37e620a42dc25f
 // Remote video view size
 static CGFloat vWidth = 100.0;
 static CGFloat vHeight = 120.0;
@@ -198,7 +202,6 @@ static CGFloat vHeight = 120.0;
     want to try it. Keep in mind that many times demo servers are down or
     with self-signed or expired certificates.
     You might need to update room ID on LicodeServer.m file.
-
     [[LicodeServer sharedInstance] obtainMultiVideoConferenceToken:username
             completion:^(BOOL result, NSString *token) {
 			if (result) {
@@ -208,7 +211,6 @@ static CGFloat vHeight = 120.0;
 				[self showCallConnectViews:YES updateStatusMessage:@"Token fetch failed"];
 			}
     }];
-
     Method 2: Connect with Nuve directly without middle server API:
     ===============================================================
 
