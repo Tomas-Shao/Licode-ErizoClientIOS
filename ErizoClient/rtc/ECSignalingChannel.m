@@ -34,6 +34,7 @@ typedef void(^SocketIOCallback)(NSArray* data);
     NSMutableDictionary *outMessagesQueues;
     NSMutableDictionary *streamSignalingDelegates;
     NSDictionary *roomMetadata;
+    SocketManager *manager;
 }
 
 - (instancetype)initWithEncodedToken:(NSString *)token
@@ -52,12 +53,12 @@ typedef void(^SocketIOCallback)(NSArray* data);
     outMessagesQueues = [NSMutableDictionary dictionary];
     streamSignalingDelegates = [[NSMutableDictionary alloc] init];
     BOOL secure = [(NSNumber *)[decodedToken objectForKey:@"secure"] boolValue];
-    NSString *urlString = [NSString stringWithFormat:@"https://%@/socket.io",
-//    NSString *urlString = [NSString stringWithFormat:@"https://%@/token",
-                           [decodedToken objectForKey:@"host"]];
     NSString *tokenId = (NSString *)[decodedToken objectForKey:@"tokenId"];
     NSString *signature = (NSString *)[decodedToken objectForKey:@"signature"];
     NSString *host = (NSString *)[decodedToken objectForKey:@"host"];
+    //    NSString *urlString = [NSString stringWithFormat:@"https://%@/token",
+    NSString *urlString = [NSString stringWithFormat:@"https://%@/socket.io/?singlePC=true&tokeId=%@&host=%@&secure=true&signature=%@&EIO=3&transport=websocket",
+                           [decodedToken objectForKey:@"host"],tokenId,host,signature];
 
 //wss://t.callt.net:8030/socket.io/?singlePC=true&tokenId=60cb09c741116a1dc8789c42&host=t.callt.net:8030&secure=true&signature=MGI1ZjAwYTYwNTkyYjdmNTg3NGQ3NWY3NWQ5MjFhMTJhOTkyYTc3MQ==&EIO=3&transport=websocket
     NSURL *url = [NSURL URLWithString:urlString];
@@ -78,18 +79,18 @@ typedef void(^SocketIOCallback)(NSArray* data);
 //                                                           @"selfSigned":@YES
 //														#endif
 //                                                         }];
-    SocketManager* manager = [[SocketManager alloc] initWithSocketURL:url config:@{
+     manager = [[SocketManager alloc] initWithSocketURL:url config:@{
                                                         #ifdef DEBUG
                                                            @"log":@YES,
                                                         #else
                                                             @"log":@NO,
                                                         #endif
-                                                           @"tokenId":tokenId,
-                                                           @"signature":signature,
-                                                           @"transport":@"websocket",
-                                                           @"EIO":@"3",
-                                                           @"host":host,
-                                                           @"singlePC":@YES,
+//                                                           @"tokenId":tokenId,
+//                                                           @"signature":signature,
+//                                                           @"transport":@"websocket",
+//                                                           @"EIO":@"3",
+//                                                           @"host":host,
+//                                                           @"singlePC":@YES,
                                                            @"forcePolling": @NO,
                                                            @"forceWebsockets": @YES,
                                                            @"secure": [NSNumber numberWithBool:secure],
