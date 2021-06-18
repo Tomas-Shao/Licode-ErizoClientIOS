@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "ErizoClient.h"
+@import AVFoundation;
 
 @interface AppDelegate ()
 
@@ -20,6 +21,12 @@
     
     // Initialize library
     [ErizoClient sharedInstance];
+
+    [AVAudioSession.sharedInstance requestRecordPermission:^(BOOL granted) {
+        NSLog(@"audio session: %@", granted ? @"true" : @"false");
+    }];
+
+    [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     
     return YES;
 }
