@@ -133,7 +133,14 @@ typedef void(^SocketIOCallback)(NSArray* data);
         // TODO
     }];
     [socketIO on:@"statusChange" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+        NSLog(@"[WSS]: status change: %@", data);
     }];
+
+    [socketIO on:@"connected" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+        NSLog(@"[WSS]: connected: %@", data);
+        [self onSendTokenCallback](data);
+    }];
+
     [socketIO on:kEventPublishMe callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
         [self onSocketPublishMe:[data objectAtIndex:0]];
     }];
@@ -223,10 +230,10 @@ typedef void(^SocketIOCallback)(NSArray* data);
     if (!options[@"state"]) {
         attributes[@"state"] = @"erizo";
     }
-    
-    SocketIOCallback callback = [self onPublishCallback:delegate];
-    [[socketIO emitWithAck:@"publish" with:@[attributes, [NSNull null]]] timingOutAfter:10
-                                                                               callback:callback];
+    NSLog(@"%@", attributes);
+//    SocketIOCallback callback = [self onPublishCallback:delegate];
+//    [[socketIO emitWithAck:@"publish" with:@[attributes, [NSNull null]]] timingOutAfter:10
+//                                                                               callback:callback];
 }
 
 - (void)unpublish:(NSString *)streamId signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
@@ -500,7 +507,7 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
     return _cb;
 }
 
-- (SocketIOCallback)onSendTokenCallback {
+- (SocketIOCallback)onSendTokenCallback2 {
     SocketIOCallback _cb = ^(id argsData) {
         NSArray *response = argsData;
         L_INFO(@"SignalingChannel: onSendTokenCallback: %@", response);
@@ -515,6 +522,33 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
             [roomMetadata setValue:[[roomMetadata objectForKey:@"streams"] mutableCopy] forKey:@"streams"];
             // Convert stream ids to strings just in case they were parsed as longs.
             for (int i=0; i<[[roomMetadata objectForKey:@"streams"] count]; i++) {
+                NSDictionary *stream = [[roomMetadata objectForKey:@"streams"][i] mutableCopy];
+                NSString *sId = [NSString stringWithFormat:@"%@", [stream objectForKey:@"id"]];
+                [stream setValue:sId forKey:@"id"];
+                [roomMetadata objectForKey:@"streams"][i] = stream;
+            }
+            [_roomDelegate signalingChannel:self didConnectToRoom:roomMetadata];
+        } else {
+            [_roomDelegate signalingChannel:self didError:message];
+        }
+    };
+    return _cb;
+}
+
+- (SocketIOCallback)onSendTokenCallback {
+    SocketIOCallback _cb = ^(id argsData) {
+        NSArray *response = argsData;
+        L_INFO(@"SignalingChannel: onSendTokenCallback: %@", response);
+
+        // Get message and status
+        NSString *message = (NSString *)[response objectAtIndex:0];
+
+        // If success store room metadata and notify connection.
+        if (response.count == 2) {
+            roomMetadata = [[response objectAtIndex:0] mutableCopy][@"msg"];
+            [roomMetadata setValue:[[roomMetadata objectForKey:@"streams"] mutableCopy] forKey:@"streams"];
+            // Convert stream ids to strings just in case they were parsed as longs.
+            for (int i = 0; i < [[roomMetadata objectForKey:@"streams"] count]; i++) {
                 NSDictionary *stream = [[roomMetadata objectForKey:@"streams"][i] mutableCopy];
                 NSString *sId = [NSString stringWithFormat:@"%@", [stream objectForKey:@"id"]];
                 [stream setValue:sId forKey:@"id"];
