@@ -17,6 +17,7 @@
                                        codecMimeType:(const NSString *)codec
                                           fmtpString:(NSString *)fmtpString
                                     preserveExistent:(BOOL)preserveExistent {
+    return description;
 
     NSAssert(![[fmtpString substringWithRange:NSMakeRange(0, 1)] isEqualToString:@";"],
              @"Can't contain ; at the begining of fmtpString");
@@ -75,6 +76,7 @@
 + (RTCSessionDescription *)descriptionForDescription:(RTCSessionDescription *)description
                                   matchingPatternStr:(NSString *)matchingPatternStr
                                      replaceWithLine:(NSString *)replacementLine {
+    return description;
 
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:matchingPatternStr
                                                                            options:NSRegularExpressionCaseInsensitive
@@ -94,6 +96,7 @@
 + (RTCSessionDescription *)descriptionForDescription:(RTCSessionDescription *)description
                                        bandwidthLimit:(NSInteger)bandwidthLimit
                                          forMediaType:(NSString *)mediaType {
+    return description;
 
     NSString *mediaPattern = [NSString stringWithFormat:@"m=%@.*", mediaType];
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:mediaPattern
@@ -129,6 +132,7 @@
 + (RTCSessionDescription *)descriptionForDescription:(RTCSessionDescription *)description
                                         appendingLine:(NSString *)line
                                      afterRegexString:(NSString *)regexStr {
+    return description;
 
     NSError *regexError;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexStr
@@ -163,6 +167,7 @@
 
 + (RTCSessionDescription *) descriptionForDescription:(RTCSessionDescription *)description
                                  preferredVideoCodec:(NSString *)codec {
+    return description;
     NSString *sdpString = description.sdp;
     NSString *lineSeparator = @"\n";
     NSString *mLineSeparator = @" ";

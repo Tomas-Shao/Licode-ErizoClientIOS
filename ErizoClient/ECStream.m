@@ -172,14 +172,15 @@
 }
 
 - (BOOL)switchCamera {
-    RTCVideoSource* source = ((RTCVideoTrack*)[_mediaStream.videoTracks objectAtIndex:0]).source;
-    if ([source isKindOfClass:[RTCAVFoundationVideoSource class]]) {
-        RTCAVFoundationVideoSource* avSource = (RTCAVFoundationVideoSource*)source;
-        avSource.useBackCamera = !avSource.useBackCamera;
-        return YES;
-    } else {
-        return NO;
-    }
+//    RTCVideoSource* source = ((RTCVideoTrack*)[_mediaStream.videoTracks objectAtIndex:0]).source;
+//    if ([source isKindOfClass:[RTCAVFoundationVideoSource class]]) {
+//        RTCAVFoundationVideoSource* avSource = (RTCAVFoundationVideoSource*)source;
+//        avSource.useBackCamera = !avSource.useBackCamera;
+//        return YES;
+//    } else {
+//        return NO;
+//    }
+    return NO;
 }
 
 - (BOOL)hasAudio {
@@ -255,8 +256,9 @@
 - (RTCVideoTrack *)createLocalVideoTrack {
     RTCVideoTrack* localVideoTrack = nil;
 #if !TARGET_IPHONE_SIMULATOR && TARGET_OS_IPHONE
-    RTCAVFoundationVideoSource *source =
-    [_peerFactory avFoundationVideoSourceWithConstraints:_defaultVideoConstraints];
+    RTCVideoSource *source = _peerFactory.videoSource;
+//    [_peerFactory avFoundationVideoSourceWithConstraints:_defaultVideoConstraints];
+//    localVideoTrack = [_peerFactory videoTrackWithSource:source trackId:kLicodeVideoLabel];
     localVideoTrack = [_peerFactory videoTrackWithSource:source trackId:kLicodeVideoLabel];
 #endif
     return localVideoTrack;

@@ -137,7 +137,6 @@ typedef void(^SocketIOCallback)(NSArray* data);
     }];
 
     [socketIO on:@"connected" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        NSLog(@"[WSS]: connected: %@", data);
         [self onSendTokenCallback](data);
     }];
 
@@ -230,10 +229,26 @@ typedef void(^SocketIOCallback)(NSArray* data);
     if (!options[@"state"]) {
         attributes[@"state"] = @"erizo";
     }
-    NSLog(@"%@", attributes);
+
+//    2021-06-18 18:19:37.534811+0800 ECIExampleLicode[28845:2266401] LOG SocketIOClient{/}: Emitting: 21["publish",{"label":"LCMSv0","audio":true,"data":true,"state":"erizo","attributes":{"name":"ErizoIOS","actualName":"ErizoIOS","type":"public"},"maxVideoBW":1024,"muteStream":{"video":false,"audio":false},"minVideoBW":300,"video":true},null], Ack: false
+
+
+
+//    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:streamOptions];
+//    [attributes setValuesForKeysWithDictionary:@{
+//                                                 @"streamId": [self longStreamId:streamId],
+//                                                 @"state": @"erizo", //[@"state"] = @"erizo";
+//                                                 @"metadata": @{@"type": @"subscriber"},
+//                                                 @"encryptTransport": @"true",
+//                                                 }];
+//    NSArray *dataToSend = [[NSArray alloc] initWithObjects: @{@"msg": @{@"options": attributes}, @"socketgd":@"0"}, nil];
+//    SocketIOCallback callback = [self onSubscribeMCUCallback:streamId signalingChannelDelegate:delegate];
+
+
+
     SocketIOCallback callback = [self onPublishCallback:delegate];
-    [[socketIO emitWithAck:@"publish" with:@[attributes, [NSNull null]]] timingOutAfter:10
-                                                                               callback:callback];
+    NSArray *dataToSend = [[NSArray alloc] initWithObjects: @{@"msg": @{@"options": attributes}, @"socketgd":@"0"}, nil];
+    [[socketIO emitWithAck:@"publish" with:dataToSend] timingOutAfter:10 callback:callback];
 }
 
 - (void)unpublish:(NSString *)streamId signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
@@ -263,9 +278,16 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
     [attributes setValuesForKeysWithDictionary:@{
                                                  //@"browser": @"chorme-stable",
                                                  @"streamId": [self longStreamId:streamId],
+                                                 @"state": @"erizo", //[@"state"] = @"erizo";
+                                                 @"metadata": @{@"type": @"subscriber"},
+                                                 @"encryptTransport": @"true",
                                                  }];
-    NSArray *dataToSend = [[NSArray alloc] initWithObjects: attributes, [NSNull null], nil];
+    NSArray *dataToSend = [[NSArray alloc] initWithObjects: @{@"msg": @{@"options": attributes}, @"socketgd":@"0"}, nil];
     SocketIOCallback callback = [self onSubscribeMCUCallback:streamId signalingChannelDelegate:delegate];
+
+//    420["subscribe",{"msg":{"options":{"streamId":872392808777339400,"audio":true,"video":true,"maxVideoBW":300,"data":true,"browser":"mozilla","metadata":{"type":"subscriber"},"muteStream":{"audio":false,"video":false},"encryptTransport":true,"slideShowMode":false}}}]
+//  ["subscribe",{"msg":{"options":{"muteStream":{"audio":false,"video":false},"streamId":"811023458398319200","audio":true,"data":true,"video":true}}}]
+
     [[socketIO emitWithAck:@"subscribe" with:dataToSend] timingOutAfter:0
                                                              callback:callback];
 }

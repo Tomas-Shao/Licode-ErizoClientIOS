@@ -26,7 +26,7 @@ static NSString *kDefaultUserName = @"ErizoIOS";
 static CGFloat vWidth = 100.0;
 static CGFloat vHeight = 120.0;
 
-@interface MultiConferenceViewController () <UITextFieldDelegate, RTCEAGLVideoViewDelegate>
+@interface MultiConferenceViewController () <UITextFieldDelegate, RTCVideoViewDelegate>
 @end
 
 @implementation MultiConferenceViewController {
