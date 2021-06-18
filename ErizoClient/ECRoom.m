@@ -41,8 +41,8 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
                                                                                          @"audio": @YES,
                                                                                          @"video": @YES,
                                                                                          @"data": @YES,
-                                                                                         @"metadata": @{ @"type": @"subscriber" },
-                                                                                         @"muteStream": @{@"audio": @NO, @"video": @NO}
+                                                                                         @"metadata": @{ @"type": @"subscriber" }//,
+                                                                                         //@"muteStream": @{@"audio": @NO, @"video": @NO}
                                                                                          }];
     }
     return self;
