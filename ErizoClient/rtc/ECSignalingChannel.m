@@ -231,9 +231,9 @@ typedef void(^SocketIOCallback)(NSArray* data);
         attributes[@"state"] = @"erizo";
     }
     NSLog(@"%@", attributes);
-//    SocketIOCallback callback = [self onPublishCallback:delegate];
-//    [[socketIO emitWithAck:@"publish" with:@[attributes, [NSNull null]]] timingOutAfter:10
-//                                                                               callback:callback];
+    SocketIOCallback callback = [self onPublishCallback:delegate];
+    [[socketIO emitWithAck:@"publish" with:@[attributes, [NSNull null]]] timingOutAfter:10
+                                                                               callback:callback];
 }
 
 - (void)unpublish:(NSString *)streamId signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
