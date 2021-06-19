@@ -86,15 +86,9 @@ static NSString const *kECSignalingMessageAgentIdKey = @"agentId";
 	NSString *connectionId;
 	NSString *erizoId;
 
-//    values = [messageDict objectForKey:@"mess"];
-//    if (!values) {
-//        values = [messageDict objectForKey:@"msg"];
-//		if (!values) {
-//			values = [messageDict objectForKey:@"evt"];
-//		}
-//    }
     NSDictionary *newDict = messageDict[@"msg"];
     values = newDict[@"evt"];
+
     if (!values) {
         NSAssert(false, @"ECSignalingMessage:messageFromDictionary unable to parse messageDict");
     }

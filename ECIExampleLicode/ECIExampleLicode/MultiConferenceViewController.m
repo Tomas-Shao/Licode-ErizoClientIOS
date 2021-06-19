@@ -26,7 +26,7 @@ static NSString *kDefaultUserName = @"ErizoIOS";
 static CGFloat vWidth = 100.0;
 static CGFloat vHeight = 120.0;
 
-@interface MultiConferenceViewController () <UITextFieldDelegate, RTCVideoViewDelegate>
+@interface MultiConferenceViewController () <UITextFieldDelegate, RTCEAGLVideoViewDelegate>
 @end
 
 @implementation MultiConferenceViewController {
@@ -97,7 +97,7 @@ static CGFloat vHeight = 120.0;
 	//[localStream setSignalingChannel:remoteRoom.signalingChannel];
 
 	// We get connected and ready to publish, so publish.
-    [remoteRoom publish:localStream];
+//    [remoteRoom publish:localStream];
 
     // Subscribe all streams available in the room.
     for (ECStream *stream in remoteRoom.remoteStreams) {

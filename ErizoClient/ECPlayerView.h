@@ -10,7 +10,7 @@
 @import WebRTC;
 #import "ECStream.h"
 
-@interface ECPlayerView : UIView <RTCVideoViewDelegate>
+@interface ECPlayerView : UIView <RTCEAGLVideoViewDelegate>
 
 ///-----------------------------------
 /// @name Initializers

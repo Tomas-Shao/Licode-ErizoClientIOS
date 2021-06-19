@@ -26,7 +26,10 @@
         NSLog(@"audio session: %@", granted ? @"true" : @"false");
     }];
 
-    [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+//    [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+        NSLog(@"grand vdieo");
+    }];
     
     return YES;
 }

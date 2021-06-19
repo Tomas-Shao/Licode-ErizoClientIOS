@@ -36,13 +36,11 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
         p2pClients = [NSMutableDictionary dictionary];
         _streamsByStreamId = [NSMutableDictionary dictionary];
         self.status = ECRoomStatusReady;
-//        room.subscribe(stream, { slideShowMode, metadata: { type: 'subscriber' }, video: !configFlags.onlyAudio, encryptTransport: !configFlags.unencrypted });
         self.defaultSubscribingStreamOptions = [NSMutableDictionary dictionaryWithDictionary:@{
                                                                                          @"audio": @YES,
                                                                                          @"video": @YES,
                                                                                          @"data": @YES,
-                                                                                         @"metadata": @{ @"type": @"subscriber" }//,
-                                                                                         //@"muteStream": @{@"audio": @NO, @"video": @NO}
+                                                                                         @"muteStream": @{@"audio": @NO, @"video": @NO}
                                                                                          }];
     }
     return self;
