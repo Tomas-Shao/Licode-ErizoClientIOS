@@ -22,7 +22,7 @@
                                                                         kStreamOptionVideo: @YES,
                                                                         kStreamOptionAudio: @YES,
                                                                         kStreamOptionData: @YES,
-                                                                        kStreamOptionLabel: @"LCMSv0",
+                                                                        kStreamOptionLabel: [NSString stringWithFormat:@"{%@}", [[NSUUID alloc] init].UUIDString],
 																		kStreamOptionMuteStream: @{kStreamOptionAudio: @NO, kStreamOptionVideo: @NO},
 																		kStreamOptionMinVideoBW: [NSNumber numberWithInteger:300],
 																		kStreamOptionMaxVideoBW: [NSNumber numberWithInteger:1024]

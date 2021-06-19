@@ -95,7 +95,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
     _publishStream = stream;
     
     NSMutableDictionary *options = [stream.streamOptions mutableCopy];
-    [options setObject:stream.streamAttributes forKey:@"attributes"];
+//    [options setObject:stream.streamAttributes forKey:@"attributes"];
     
     // Reset stats used for bitrateCalculation
     statsBySSRC = [NSMutableDictionary dictionary];
