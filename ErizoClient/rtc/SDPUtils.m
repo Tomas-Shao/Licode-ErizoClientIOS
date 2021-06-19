@@ -17,8 +17,6 @@
                                        codecMimeType:(const NSString *)codec
                                           fmtpString:(NSString *)fmtpString
                                     preserveExistent:(BOOL)preserveExistent {
-    return description;
-
     NSAssert(![[fmtpString substringWithRange:NSMakeRange(0, 1)] isEqualToString:@";"],
              @"Can't contain ; at the begining of fmtpString");
     NSAssert(![[fmtpString substringWithRange:NSMakeRange([fmtpString length]-1, 1)] isEqualToString:@";"],
@@ -76,8 +74,6 @@
 + (RTCSessionDescription *)descriptionForDescription:(RTCSessionDescription *)description
                                   matchingPatternStr:(NSString *)matchingPatternStr
                                      replaceWithLine:(NSString *)replacementLine {
-    return description;
-
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:matchingPatternStr
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:nil];
@@ -96,8 +92,6 @@
 + (RTCSessionDescription *)descriptionForDescription:(RTCSessionDescription *)description
                                        bandwidthLimit:(NSInteger)bandwidthLimit
                                          forMediaType:(NSString *)mediaType {
-    return description;
-
     NSString *mediaPattern = [NSString stringWithFormat:@"m=%@.*", mediaType];
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:mediaPattern
                                                                            options:NSRegularExpressionCaseInsensitive
@@ -132,8 +126,6 @@
 + (RTCSessionDescription *)descriptionForDescription:(RTCSessionDescription *)description
                                         appendingLine:(NSString *)line
                                      afterRegexString:(NSString *)regexStr {
-    return description;
-
     NSError *regexError;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexStr
                                                                            options:NSRegularExpressionCaseInsensitive
@@ -167,7 +159,6 @@
 
 + (RTCSessionDescription *) descriptionForDescription:(RTCSessionDescription *)description
                                  preferredVideoCodec:(NSString *)codec {
-    return description;
     NSString *sdpString = description.sdp;
     NSString *lineSeparator = @"\n";
     NSString *mLineSeparator = @" ";

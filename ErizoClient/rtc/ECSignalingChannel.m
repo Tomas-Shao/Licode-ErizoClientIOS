@@ -35,6 +35,7 @@ typedef void(^SocketIOCallback)(NSArray* data);
     NSMutableDictionary *streamSignalingDelegates;
     NSDictionary *roomMetadata;
     SocketManager *manager;
+    int socketgd;
 }
 
 - (instancetype)initWithEncodedToken:(NSString *)token
@@ -205,11 +206,35 @@ typedef void(^SocketIOCallback)(NSArray* data);
         [data setObject:message.peerSocketId forKey:kEventKeyPeerSocketId];
     }
     [data setObject:messageDictionary forKey:@"msg"];
+
+    NSDictionary *options = @{@"options": data};
+    NSDictionary *msg = @{@"msg": options, @"socketgd": @(socketgd)};
     
-    L_INFO(@"Send signaling message: %@", data);
-    
-    [socketIO emit:@"connectionMessage"
-              with:[[NSArray alloc] initWithObjects:data, [NSNull null], nil]];
+    L_INFO(@"Send signaling message: %@", msg);
+
+//    [
+//        "connectionMessage",
+//        {
+//            "socketgd": 27,
+//            "msg": {
+//                "options": {
+//                    "connectionId": "0fe49d0e-e42f-45a2-907d-5324685cde05_c2362747-5181-0756-dbe4-7b433de7c988_3",
+//                    "erizoId": "c2362747-5181-0756-dbe4-7b433de7c988",
+//                    "msg": {
+//                        "type": "candidate",
+//                        "candidate": {
+//                            "sdpMLineIndex": -1,
+//                            "sdpMid": "end",
+//                            "candidate": "end"
+//                        }
+//                    },
+//                    "browser": "mozilla"
+//                }
+//            }
+//        }
+//    ]
+
+    [self sendSocketMessage:[[NSArray alloc] initWithObjects:msg, [NSNull null], nil] type:@"connectionMessage"];
 }
 
 - (void)drainMessageQueueForStreamId:(NSString *)streamId peerSocketId:(NSString *)peerSocketId connectionId:(NSString *)connectionId {
@@ -247,8 +272,9 @@ typedef void(^SocketIOCallback)(NSArray* data);
 
 
     SocketIOCallback callback = [self onPublishCallback:delegate];
-    NSArray *dataToSend = [[NSArray alloc] initWithObjects: @{@"msg": @{@"options": attributes}, @"socketgd":@"0"}, nil];
-    [[socketIO emitWithAck:@"publish" with:dataToSend] timingOutAfter:10 callback:callback];
+    NSArray *dataToSend = [[NSArray alloc] initWithObjects: @{@"msg": @{@"options": attributes}, @"socketgd":@(socketgd)}, nil];
+//    [[socketIO emitWithAck:@"publish" with:dataToSend] timingOutAfter:10 callback:callback];
+    [[self sendACK:dataToSend type:@"publish"] timingOutAfter:10 callback:callback];
 }
 
 - (void)unpublish:(NSString *)streamId signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
@@ -282,14 +308,14 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
                                                  @"metadata": @{@"type": @"subscriber"},
                                                  @"encryptTransport": @"true",
                                                  }];
-    NSArray *dataToSend = [[NSArray alloc] initWithObjects: @{@"msg": @{@"options": attributes}, @"socketgd":@"0"}, nil];
+    NSArray *dataToSend = [[NSArray alloc] initWithObjects: @{@"msg": @{@"options": attributes}, @"socketgd":@(socketgd)}, nil];
     SocketIOCallback callback = [self onSubscribeMCUCallback:streamId signalingChannelDelegate:delegate];
 
 //    420["subscribe",{"msg":{"options":{"streamId":872392808777339400,"audio":true,"video":true,"maxVideoBW":300,"data":true,"browser":"mozilla","metadata":{"type":"subscriber"},"muteStream":{"audio":false,"video":false},"encryptTransport":true,"slideShowMode":false}}}]
 //  ["subscribe",{"msg":{"options":{"muteStream":{"audio":false,"video":false},"streamId":"811023458398319200","audio":true,"data":true,"video":true}}}]
 
-    [[socketIO emitWithAck:@"subscribe" with:dataToSend] timingOutAfter:0
-                                                             callback:callback];
+//    [[socketIO emitWithAck:@"subscribe" with:dataToSend] timingOutAfter:0 callback:callback];
+    [[self sendACK:dataToSend type:@"subscribe"] timingOutAfter:0 callback:callback];
 }
 
 - (void)unsubscribe:(NSString *)streamId {
@@ -674,6 +700,17 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
 		}
 	}
 	return nil;
+}
+
+- (void)sendSocketMessage: (NSArray *)socket type: (NSString *)type {
+    [socketIO emit:type with:socket];
+    socketgd ++;
+}
+
+- (OnAckCallback *)sendACK: (NSArray *)socket type: (NSString *)type {
+    OnAckCallback *callback = [socketIO emitWithAck:type with:socket];
+    socketgd ++;
+    return callback;
 }
 
 @end

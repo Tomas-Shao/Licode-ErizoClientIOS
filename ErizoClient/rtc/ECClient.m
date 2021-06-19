@@ -83,6 +83,12 @@
     if (self = [self init]) {
         _delegate = delegate;
         _factory =  peerFactory;
+
+        RTCConfiguration *config = [[RTCConfiguration alloc] init];
+        config.iceServers = @[[[RTCIceServer alloc] initWithURLStrings:@[@"stun:gfax.net:3478"]],
+                              [[RTCIceServer alloc] initWithURLStrings:@[@"turn:gfax.net:3478"] username:@"allcom" credential:@"allcompass"]];
+        RTCMediaConstraints *constraints = [[RTCMediaConstraints alloc] initWithMandatoryConstraints:nil optionalConstraints:nil];
+        _peerConnection = [_factory peerConnectionWithConfiguration:config constraints:constraints delegate:self];
     }
     return  self;
 }
@@ -118,6 +124,10 @@
     _messageQueue = [NSMutableArray array];
     
     [self setState:ECClientStateDisconnected];
+}
+
+- (void)dealloc
+{
 }
 
 #
@@ -353,36 +363,33 @@ readyToSubscribeStreamId:(NSString *)streamId
 
     self.state = ECClientStateConnecting;
 
-    C_L_INFO(@"Creating PeerConnection");
-    RTCMediaConstraints *constraints = [self defaultPeerConnectionConstraints];
-    RTCConfiguration *config = [[RTCConfiguration alloc] init];
-    config.iceServers = _iceServers;
-    _peerConnection = [_factory peerConnectionWithConfiguration:config
-                                                    constraints:constraints
-                                                       delegate:self];
+    if (_peerConnection) {
+        NSLog(@"peer connection %@", _peerConnection);
+    }
 
     C_L_INFO(@"Adding local media stream to PeerConnection");
     _localStream = [self.delegate streamToPublishByAppClient:self];
     [_peerConnection addStream:_localStream];
+
     __weak ECClient *weakSelf = self;
     [_peerConnection offerForConstraints:[self defaultOfferConstraints]
                        completionHandler:^(RTCSessionDescription * _Nullable sdp, NSError * _Nullable error) {
                            ECClient *strongSelf = weakSelf;
                            [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
+        if (error != nil) {
+            NSLog(@"%@", error);
+        }
     }];
 }
 
 - (void)startSubscribeSignaling {
     C_L_INFO(@"Start subscribe signaling");
     self.state = ECClientStateConnecting;
-    
-    C_L_INFO(@"Creating PeerConnection");
-    RTCMediaConstraints *constraints = [self defaultPeerConnectionConstraints];
-    RTCConfiguration *config = [[RTCConfiguration alloc] init];
-    config.iceServers = _iceServers;
-    _peerConnection = [_factory peerConnectionWithConfiguration:config
-                                                    constraints:constraints
-                                                       delegate:self];
+
+    if (_peerConnection) {
+        NSLog(@"peer connection %@", _peerConnection);
+    }
+
     __weak ECClient *weakSelf = self;
     if (_peerSocketId) {
         [self drainMessageQueueIfReady];
@@ -391,7 +398,10 @@ readyToSubscribeStreamId:(NSString *)streamId
                            completionHandler:^(RTCSessionDescription * _Nullable sdp, NSError * _Nullable error) {
                                ECClient *strongSelf = weakSelf;
                                [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
-                           }];
+            if (error != nil) {
+                NSLog(@"%@", error);
+            }
+        }];
     }
 }
 
@@ -412,7 +422,23 @@ readyToSubscribeStreamId:(NSString *)streamId
             break;
         case kECSignalingMessageTypeStarted:
             break;
-        case kECSignalingMessageTypeOffer:
+        case kECSignalingMessageTypeOffer: {
+            ECSessionDescriptionMessage *sdpMessage = (ECSessionDescriptionMessage *)message;
+            RTCSessionDescription *description = sdpMessage.sessionDescription;
+            RTCSessionDescription *newSDP =
+                [SDPUtils descriptionForDescription:description
+                                preferredVideoCodec:[[self class] getPreferredVideoCodec]];
+
+            newSDP = [self descriptionForDescription:newSDP bandwidthOptions:_clientOptions];
+
+            __weak ECClient *weakSelf = self;
+            [_peerConnection setRemoteDescription:newSDP
+                                completionHandler:^(NSError * _Nullable error) {
+                ECClient *strongSelf = weakSelf;
+                [strongSelf peerConnection:strongSelf.peerConnection didSetSessionDescriptionWithError:error];
+            }];
+            break;
+        }
         case kECSignalingMessageTypeAnswer: {
             ECSessionDescriptionMessage *sdpMessage = (ECSessionDescriptionMessage *)message;
             RTCSessionDescription *description = sdpMessage.sessionDescription;
@@ -422,17 +448,19 @@ readyToSubscribeStreamId:(NSString *)streamId
             
             newSDP = [self descriptionForDescription:newSDP bandwidthOptions:_clientOptions];
             
-            __weak ECClient *weakSelf = self;
+//            __weak ECClient *weakSelf = self;
             [_peerConnection setRemoteDescription:newSDP
                                 completionHandler:^(NSError * _Nullable error) {
-                ECClient *strongSelf = weakSelf;
-                [strongSelf peerConnection:strongSelf.peerConnection didSetSessionDescriptionWithError:error];
+                if (error != nil) {
+                    NSLog(@"%@", error);
+                }
+//                ECClient *strongSelf = weakSelf;
+//                [strongSelf peerConnection:strongSelf.peerConnection didSetSessionDescriptionWithError:error];
             }];
             break;
         }
         case kECSignalingMessageTypeCandidate: {
-            ECICECandidateMessage *candidateMessage =
-            (ECICECandidateMessage *)message;
+            ECICECandidateMessage *candidateMessage = (ECICECandidateMessage *)message;
             [_peerConnection addIceCandidate:candidateMessage.candidate];
             break;
         }
@@ -523,6 +551,7 @@ readyToSubscribeStreamId:(NSString *)streamId
                 }
             } else {
                 [strongSelf.delegate appClient:strongSelf didError:error];
+                NSLog(@"%@", error);
             }
         }];
         
