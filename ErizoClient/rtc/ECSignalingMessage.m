@@ -86,13 +86,9 @@ static NSString const *kECSignalingMessageAgentIdKey = @"agentId";
 	NSString *connectionId;
 	NSString *erizoId;
 
-    values = [messageDict objectForKey:@"mess"];
-    if (!values) {
-        values = [messageDict objectForKey:@"msg"];
-		if (!values) {
-			values = [messageDict objectForKey:@"evt"];
-		}
-    }
+    NSDictionary *newDict = messageDict[@"msg"];
+    values = newDict[@"evt"];
+
     if (!values) {
         NSAssert(false, @"ECSignalingMessage:messageFromDictionary unable to parse messageDict");
     }
@@ -103,20 +99,20 @@ static NSString const *kECSignalingMessageAgentIdKey = @"agentId";
 		typeString = (NSString*)values;
 	}
 
-    if ([messageDict objectForKey:@"streamId"]) {
-        streamId = [NSString stringWithFormat:@"%@", [messageDict objectForKey:@"streamId"]];
+    if ([newDict objectForKey:@"streamId"]) {
+        streamId = [NSString stringWithFormat:@"%@", [newDict objectForKey:@"streamId"]];
     }
-    if (!streamId && [messageDict objectForKey:@"peerId"]) {
-        streamId = [NSString stringWithFormat:@"%@", [messageDict objectForKey:@"peerId"]];
+    if (!streamId && [newDict objectForKey:@"peerId"]) {
+        streamId = [NSString stringWithFormat:@"%@", [newDict objectForKey:@"peerId"]];
     }
-    if ([messageDict objectForKey:@"peerSocket"]) {
-        peerSocketId = [NSString stringWithFormat:@"%@", [messageDict objectForKey:@"peerSocket"]];
+    if ([newDict objectForKey:@"peerSocket"]) {
+        peerSocketId = [NSString stringWithFormat:@"%@", [newDict objectForKey:@"peerSocket"]];
     }
-	if ([messageDict objectForKey:@"connectionId"]) {
-		connectionId = [NSString stringWithFormat:@"%@", [messageDict objectForKey:@"connectionId"]];
+	if ([newDict objectForKey:@"connectionId"]) {
+		connectionId = [NSString stringWithFormat:@"%@", [newDict objectForKey:@"connectionId"]];
 	}
-	if ([messageDict objectForKey:@"erizoId"]) {
-		erizoId = [NSString stringWithFormat:@"%@", [messageDict objectForKey:@"erizoId"]];
+	if ([newDict objectForKey:@"erizoId"]) {
+		erizoId = [NSString stringWithFormat:@"%@", [newDict objectForKey:@"erizoId"]];
 	}
 
     if ([typeString isEqualToString:@"candidate"]) {

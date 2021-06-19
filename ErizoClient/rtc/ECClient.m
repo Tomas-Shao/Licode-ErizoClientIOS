@@ -83,6 +83,16 @@
     if (self = [self init]) {
         _delegate = delegate;
         _factory =  peerFactory;
+
+        [self setupICEServers:@{@"":@""}];
+
+        RTCMediaConstraints *constraints = [self defaultPeerConnectionConstraints];
+        RTCConfiguration *config = [[RTCConfiguration alloc] init];
+        config.iceServers = _iceServers;
+        _peerConnection = [_factory peerConnectionWithConfiguration:config
+                                                        constraints:constraints
+                                                           delegate:self];
+
     }
     return  self;
 }
@@ -321,27 +331,31 @@ readyToSubscribeStreamId:(NSString *)streamId
 - (void)setupICEServers:(NSDictionary *)ICEServersConfiguration {
     _iceServers = [NSMutableArray array];
 
-    for (NSDictionary *dict in ICEServersConfiguration) {
-        NSString *username = [dict objectForKey:@"username"] ? [dict objectForKey:@"username"] : nil;
-        NSString *password = [dict objectForKey:@"credential"] ? [dict objectForKey:@"credential"] : nil;
-        NSArray *urls = @[];
+    _iceServers = @[[[RTCIceServer alloc] initWithURLStrings:@[@"stun:gfax.net:3478"]],
+                    [[RTCIceServer alloc] initWithURLStrings:@[@"turn:gfax.net:3478"] username:@"allcom" credential:@"allcompass"]];
 
-        if ([dict objectForKey:@"urls"] && [[dict objectForKey:@"urls"] isKindOfClass:[NSArray class]]) {
-            urls = [dict objectForKey:@"urls"];
-        } else if ([dict objectForKey:@"url"] && [[dict objectForKey:@"url"] isKindOfClass:[NSString class]]) {
-            urls = @[[dict objectForKey:@"url"]];
-        } else {
-            L_ERROR(@"No url found for ICEServer!");
-            continue;
-        }
 
-        RTCIceServer *iceServer = [[RTCIceServer alloc] initWithURLStrings:urls
-                                                                  username:username
-                                                                credential:password];
-        [_iceServers addObject:iceServer];
-    }
-
-    L_DEBUG(@"Ice Servers: %@", _iceServers);
+//    for (NSDictionary *dict in ICEServersConfiguration) {
+//        NSString *username = [dict objectForKey:@"username"] ? [dict objectForKey:@"username"] : nil;
+//        NSString *password = [dict objectForKey:@"credential"] ? [dict objectForKey:@"credential"] : nil;
+//        NSArray *urls = @[];
+//
+//        if ([dict objectForKey:@"urls"] && [[dict objectForKey:@"urls"] isKindOfClass:[NSArray class]]) {
+//            urls = [dict objectForKey:@"urls"];
+//        } else if ([dict objectForKey:@"url"] && [[dict objectForKey:@"url"] isKindOfClass:[NSString class]]) {
+//            urls = @[[dict objectForKey:@"url"]];
+//        } else {
+//            L_ERROR(@"No url found for ICEServer!");
+//            continue;
+//        }
+//
+//        RTCIceServer *iceServer = [[RTCIceServer alloc] initWithURLStrings:urls
+//                                                                  username:username
+//                                                                credential:password];
+//        [_iceServers addObject:iceServer];
+//    }
+//
+//    L_DEBUG(@"Ice Servers: %@", _iceServers);
 }
 
 - (void)startPublishSignaling {
@@ -354,12 +368,6 @@ readyToSubscribeStreamId:(NSString *)streamId
     self.state = ECClientStateConnecting;
 
     C_L_INFO(@"Creating PeerConnection");
-    RTCMediaConstraints *constraints = [self defaultPeerConnectionConstraints];
-    RTCConfiguration *config = [[RTCConfiguration alloc] init];
-    config.iceServers = _iceServers;
-    _peerConnection = [_factory peerConnectionWithConfiguration:config
-                                                    constraints:constraints
-                                                       delegate:self];
 
     C_L_INFO(@"Adding local media stream to PeerConnection");
     _localStream = [self.delegate streamToPublishByAppClient:self];
@@ -368,7 +376,10 @@ readyToSubscribeStreamId:(NSString *)streamId
     [_peerConnection offerForConstraints:[self defaultOfferConstraints]
                        completionHandler:^(RTCSessionDescription * _Nullable sdp, NSError * _Nullable error) {
                            ECClient *strongSelf = weakSelf;
-                           [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
+        [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
+        if (error != nil) {
+            NSLog(@"%@", error);
+        }
     }];
 }
 
@@ -377,21 +388,25 @@ readyToSubscribeStreamId:(NSString *)streamId
     self.state = ECClientStateConnecting;
     
     C_L_INFO(@"Creating PeerConnection");
-    RTCMediaConstraints *constraints = [self defaultPeerConnectionConstraints];
-    RTCConfiguration *config = [[RTCConfiguration alloc] init];
-    config.iceServers = _iceServers;
-    _peerConnection = [_factory peerConnectionWithConfiguration:config
-                                                    constraints:constraints
-                                                       delegate:self];
+//    RTCMediaConstraints *constraints = [self defaultPeerConnectionConstraints];
+//    RTCConfiguration *config = [[RTCConfiguration alloc] init];
+//    config.iceServers = _iceServers;
+//    _peerConnection = [_factory peerConnectionWithConfiguration:config
+//                                                    constraints:constraints
+//                                                       delegate:self];
     __weak ECClient *weakSelf = self;
     if (_peerSocketId) {
         [self drainMessageQueueIfReady];
     } else {
-        [_peerConnection offerForConstraints:[self defaultOfferConstraints]
-                           completionHandler:^(RTCSessionDescription * _Nullable sdp, NSError * _Nullable error) {
-                               ECClient *strongSelf = weakSelf;
-                               [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
-                           }];
+
+//        [_peerConnection offerForConstraints:[self defaultOfferConstraints]
+//                           completionHandler:^(RTCSessionDescription * _Nullable sdp, NSError * _Nullable error) {
+//                               ECClient *strongSelf = weakSelf;
+//                               [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
+//            if (error != nil) {
+//                NSLog(@"%@", error);
+//            }
+//        }];
     }
 }
 
@@ -427,6 +442,9 @@ readyToSubscribeStreamId:(NSString *)streamId
                                 completionHandler:^(NSError * _Nullable error) {
                 ECClient *strongSelf = weakSelf;
                 [strongSelf peerConnection:strongSelf.peerConnection didSetSessionDescriptionWithError:error];
+                if (error != nil) {
+                    NSLog(@"%@", error);
+                }
             }];
             break;
         }
@@ -469,6 +487,9 @@ readyToSubscribeStreamId:(NSString *)streamId
                 ECClient *strongSelf = weakSelf;
                 [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp
                                                                                            error:error];
+                if (error != nil) {
+                    NSLog(@"%@", error);
+                }
             }];
         }
     });
@@ -508,6 +529,10 @@ readyToSubscribeStreamId:(NSString *)streamId
         [_peerConnection setLocalDescription:newSDP completionHandler:^(NSError * _Nullable error) {
             ECClient *strongSelf = weakSelf;
             [strongSelf peerConnection:strongSelf.peerConnection didSetSessionDescriptionWithError:error];
+
+            if (error != nil) {
+                NSLog(@"%@", error);
+            }
 
             if (!error) {
                 ECSessionDescriptionMessage *message = [[ECSessionDescriptionMessage alloc]
