@@ -394,7 +394,7 @@ readyToSubscribeStreamId:(NSString *)streamId
 //    _peerConnection = [_factory peerConnectionWithConfiguration:config
 //                                                    constraints:constraints
 //                                                       delegate:self];
-    __weak ECClient *weakSelf = self;
+//    __weak ECClient *weakSelf = self;
     if (_peerSocketId) {
         [self drainMessageQueueIfReady];
     } else {
@@ -402,7 +402,7 @@ readyToSubscribeStreamId:(NSString *)streamId
 //        [_peerConnection offerForConstraints:[self defaultOfferConstraints]
 //                           completionHandler:^(RTCSessionDescription * _Nullable sdp, NSError * _Nullable error) {
 //                               ECClient *strongSelf = weakSelf;
-//                               [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
+//            [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
 //            if (error != nil) {
 //                NSLog(@"%@", error);
 //            }

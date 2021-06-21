@@ -74,6 +74,7 @@ static CGFloat vHeight = 120.0;
     // Render local stream
     if ([localStream hasVideo]) {
         RTCVideoTrack *videoTrack = [localStream.mediaStream.videoTracks objectAtIndex:0];
+        NSLog(@"[LocalStream]: %@", localStream.mediaStream.videoTracks);
         [videoTrack addRenderer:_localView];
     }
 }
@@ -94,7 +95,7 @@ static CGFloat vHeight = 120.0;
 						   @"type": @"public",
 						   };
     [localStream setAttributes:attributes];
-	//[localStream setSignalingChannel:remoteRoom.signalingChannel];
+//	[localStream setSignalingChannel:remoteRoom.signalingChannel];
 
 	// We get connected and ready to publish, so publish.
 //    [remoteRoom publish:localStream];
@@ -243,13 +244,12 @@ static CGFloat vHeight = 120.0;
                                        username:username
                                            role:kLicodePresenterRole
                                      completion:^(BOOL success, NSString *token) {
-                                         if (success) {
-                                            [remoteRoom connectWithEncodedToken:token];
-                                         } else {
-                                             [self showCallConnectViews:YES
-                                                    updateStatusMessage:@"Error!"];
-                                         }
-                                     }];
+        if (success) {
+            [remoteRoom connectWithEncodedToken:token];
+        } else {
+            [self showCallConnectViews:YES updateStatusMessage:@"Error!"];
+        }
+    }];
     /*
     Method 2.3: Create a Room and then create a Token.
 

@@ -235,16 +235,7 @@ typedef void(^SocketIOCallback)(NSArray* data);
         [data setObject:message.peerSocketId forKey:kEventKeyPeerSocketId];
     }
     [data setObject:messageDictionary forKey:@"msg"];
-    
-    L_INFO(@"Send signaling message: %@", data);
-
-    NSDictionary *options = @{@"options": data};
-    NSDictionary *msg = @{@"msg": options, @"socketgd": @(socketgd)};
-
-    [self sendSocketMessage:[[NSArray alloc] initWithObjects:msg, [NSNull null], nil] type:@"connectionMessage"];
-
-//    [socketIO emit:@"connectionMessage"
-//              with:[[NSArray alloc] initWithObjects:data, [NSNull null], nil]];
+    [self send: @{@"options": data} name: @"connectionMessage"];
 }
 
 - (void)drainMessageQueueForStreamId:(NSString *)streamId peerSocketId:(NSString *)peerSocketId connectionId:(NSString *)connectionId {
@@ -264,17 +255,13 @@ typedef void(^SocketIOCallback)(NSArray* data);
     if (!options[@"state"]) {
         attributes[@"state"] = @"erizo";
     }
-    NSLog(@"%@", attributes);
-    NSArray *dataToSend = [[NSArray alloc] initWithObjects: @{@"msg": @{@"options": attributes}, @"socketgd":@(socketgd)}, nil];
     SocketIOCallback callback = [self onPublishCallback:delegate];
-//    [[socketIO emitWithAck:@"publish" with:@[attributes, [NSNull null]]] timingOutAfter:10 callback:callback];
-    [[self sendACK:dataToSend type:@"publish"] timingOutAfter:10 callback:callback];
+    [[self sendAck: @{@"options": attributes} name: @"publish"] timingOutAfter:10 callback:callback];
 }
 
 - (void)unpublish:(NSString *)streamId signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
     SocketIOCallback callback = [self onUnPublishCallback:streamId];
-    [[socketIO emitWithAck:@"unpublish" with:@[[self longStreamId:streamId]]] timingOutAfter:10
-                                                                                    callback:callback];
+    [[self sendAck:@{@"options": @{@"id": [self longStreamId:streamId]}} name:@"unpublish"] timingOutAfter:10 callback:callback];
 }
 
 - (void)publishToPeerID:(NSString *)peerSocketId signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
@@ -302,39 +289,23 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
                                                  @"metadata": @{@"type":@"subscriber"},
                                                  @"streamId": [self longStreamId:streamId],
                                                  }];
-//    NSArray *dataToSend = [[NSArray alloc] initWithObjects: attributes, [NSNull null], nil];
-
-    NSArray *dataToSend = [[NSArray alloc] initWithObjects: @{@"msg": @{@"options": attributes}, @"socketgd":@(socketgd)}, nil];
-
-
-//    "encryptTransport": true,
-//    "maxVideoBW": 300,
-//    "browser": "mozilla",
-//    "metadata": {
-//        "type": "subscriber"
-//    },
-
 
     SocketIOCallback callback = [self onSubscribeMCUCallback:streamId signalingChannelDelegate:delegate];
-//    [[socketIO emitWithAck:@"subscribe" with:dataToSend] timingOutAfter:0 callback:callback];
-    [[self sendACK:dataToSend type:@"subscribe"] timingOutAfter:0 callback:callback];
+    [[self sendAck:@{@"options": attributes} name:@"subscribe"] timingOutAfter:0 callback:callback];
 }
 
 - (void)unsubscribe:(NSString *)streamId {
     ASSERT_STREAM_ID_STRING(streamId);
 
     SocketIOCallback callback = [self onUnSubscribeCallback:streamId];
-    [[socketIO emitWithAck:@"unsubscribe" with:@[[self longStreamId:streamId]]] timingOutAfter:0
-                                                                                      callback:callback];
+    [[self sendAck:@{@"options": @{@"id": [self longStreamId:streamId]}} name:@"unsubscribe"] timingOutAfter:0 callback:callback];
 }
 
 
 - (void)startRecording:(NSString *)streamId {
     ASSERT_STREAM_ID_STRING(streamId);
-    NSNumber *longStreamId = [self longStreamId:streamId];
     SocketIOCallback callback = [self onStartRecordingCallback:streamId];
-    [[socketIO emitWithAck:@"startRecorder" with:@[@{@"to":longStreamId}]] timingOutAfter:0
-                                                                                 callback:callback];
+    [[self sendAck:@{@"options": @{@"id": [self longStreamId:streamId]}} name:@"startRecorder"] timingOutAfter:0 callback:callback];
 }
 
 - (void)sendDataStream:(ECSignalingMessage *)message {
@@ -351,10 +322,9 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 
 	[data setObject:@([message.streamId longLongValue]) forKey:@"id"];
-	[data setObject:messageDictionary forKey:@"msg"];
+	[data setObject:messageDictionary forKey:@"options"];
 
-	L_INFO(@"Send event message data stream: %@", data);
-    [socketIO emit:@"sendDataStream" with:[[NSArray alloc] initWithObjects: data, nil]];
+    [self sendAck:data name:@"sendDataStream"];
 }
 
 - (void)updateStreamAttributes:(ECSignalingMessage *)message {
@@ -373,11 +343,7 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
 	
 	[data setObject:@([message.streamId longLongValue]) forKey:@"id"];
 	[data setObject:messageDictionary forKey:@"attrs"];
-	
-	L_INFO(@"Update attribute stream: %@", data);
-	
-	[socketIO emit:@"updateStreamAttributes"
-              with:[[NSArray alloc] initWithObjects: data, nil]];
+    [self send: @{@"options": data} name: @"updateStreamAttributes"];
 }
 
 #
@@ -704,15 +670,16 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
 	return nil;
 }
 
-- (void)sendSocketMessage: (NSArray *)socket type: (NSString *)type {
-    [socketIO emit:type with:socket];
-    socketgd ++;
+- (void)send: (NSDictionary *)data name: (NSString *)name {
+    socketgd += 1;
+    NSArray *array = @[@{@"msg": data, @"socketgd": @(socketgd)}];
+    [socketIO emit:name with:array];
 }
 
-- (OnAckCallback *)sendACK: (NSArray *)socket type: (NSString *)type {
-    OnAckCallback *callback = [socketIO emitWithAck:type with:socket];
-    socketgd ++;
-    return callback;
+- (OnAckCallback *)sendAck: (NSDictionary *)data name: (NSString *)name {
+    socketgd += 1;
+    NSArray *array = @[@{@"msg": data, @"socketgd": @(socketgd)}];
+    return [socketIO emitWithAck: name with: array];
 }
 
 @end
