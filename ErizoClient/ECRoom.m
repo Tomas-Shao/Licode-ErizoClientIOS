@@ -126,13 +126,10 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
 
     ECClient *client = [[ECClient alloc] initWithDelegate:self
                                               peerFactory:_peerFactory
-                                                 streamId:nil
+                                                 streamId:stream.streamId
                                              peerSocketId:nil
                                                   options:[self getClientOptionsWithStream:stream]];
-    [_signalingChannel subscribe:stream.streamId
-                   streamOptions:self.defaultSubscribingStreamOptions
-        signalingChannelDelegate:client];
-
+    [_signalingChannel subscribe:stream.streamId streamOptions:self.defaultSubscribingStreamOptions signalingChannelDelegate:client];
     return YES;
 }
 
@@ -277,9 +274,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
     [_delegate room:self didFailStartRecordingStream:_publishStream withErrorMsg:errorMsg];
 }
 
-- (void)signalingChannel:(ECSignalingChannel *)channel
-    didStreamAddedWithId:(NSString *)streamId
-                   event:(ECSignalingEvent *)event {
+- (void)signalingChannel:(ECSignalingChannel *)channel didStreamAddedWithId:(NSString *)streamId event:(ECSignalingEvent *)event {
     if ([_publishStreamId isEqualToString:streamId]) {
         [_delegate room:self didPublishStream:_publishStream];
         if (_recordEnabled && !_peerToPeerRoom) {
@@ -386,8 +381,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
     return _publishStream.mediaStream;
 }
 
-- (void)appClient:(ECClient *)client didReceiveRemoteStream:(RTCMediaStream *)remoteStream
-                                               withStreamId:(NSString *)streamId {
+- (void)appClient:(ECClient *)client didReceiveRemoteStream:(RTCMediaStream *)remoteStream withStreamId:(NSString *)streamId {
     L_DEBUG(@"Room: didReceiveRemoteStream");
     if ([_publishStreamId isEqualToString:streamId]) {
         // Ignore this stream since it is local.

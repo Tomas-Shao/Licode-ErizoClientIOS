@@ -164,29 +164,6 @@ typedef void(^SocketIOCallback)(NSArray* data);
     }
 }
 
-/*
- [
-     "connectionMessage",
-     {
-         "socketgd": 27,
-         "msg": {
-             "options": {
-                 "connectionId": "0fe49d0e-e42f-45a2-907d-5324685cde05_c2362747-5181-0756-dbe4-7b433de7c988_3",
-                 "erizoId": "c2362747-5181-0756-dbe4-7b433de7c988",
-                 "msg": {
-                     "type": "candidate",
-                     "candidate": {
-                         "sdpMLineIndex": -1,
-                         "sdpMid": "end",
-                         "candidate": "end"
-                     }
-                 },
-                 "browser": "mozilla"
-             }
-         }
-     }
- ]
- */
 - (void)sendSignalingMessage:(ECSignalingMessage *)message {
     if (message.erizoId == (id)[NSNull null] ||
         message.connectionId == (id)[NSNull null] ||
@@ -213,6 +190,9 @@ typedef void(^SocketIOCallback)(NSArray* data);
 	}
     if (message.peerSocketId) {
         [data setObject:message.peerSocketId forKey:kEventKeyPeerSocketId];
+    }
+    if (message.streamId) {
+        [data setObject:message.streamId forKey:kEventKeyStreamId];
     }
     [data setObject:@"mozilla" forKey:@"browser"];
     [data setObject:messageDictionary forKey:@"msg"];
@@ -261,11 +241,8 @@ typedef void(^SocketIOCallback)(NSArray* data);
     [_roomDelegate signalingChannel:self didReceiveStreamIdReadyToPublish:delegate.streamId];
 }
 
-- (void)subscribe:(NSString *)streamId
-    streamOptions:(NSDictionary *)streamOptions
-signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
+- (void)subscribe:(NSString *)streamId streamOptions:(NSDictionary *)streamOptions signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
     ASSERT_STREAM_ID_STRING(streamId);
-
     NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:streamOptions];
     [attributes setValuesForKeysWithDictionary:@{
                                                  @"browser": @"mozilla",
@@ -343,10 +320,8 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
 }
 
 - (void)onSocketAddStream:(NSDictionary *)msg {
-    ECSignalingEvent *event = [[ECSignalingEvent alloc] initWithName:kEventOnAddStream
-                                                             message:msg];
-    NSString *sId = [NSString stringWithFormat:@"%@", [msg objectForKey:@"id"]];
-    [_roomDelegate signalingChannel:self didStreamAddedWithId:sId event:event];
+    ECSignalingEvent *event = [[ECSignalingEvent alloc] initWithName:kEventOnAddStream message:msg];
+    [_roomDelegate signalingChannel:self didStreamAddedWithId:event.streamId event:event];
 }
 
 - (void)onSocketRemoveStream:(NSDictionary *)msg {
@@ -378,9 +353,7 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
 	if (!message.streamId) {
 		key = [self startKeyForDelegateWithConnectionId:message.connectionId];
 	} else {
-		key = [self keyForDelegateWithStreamId:message.streamId
-									   peerSocketId:message.peerSocketId
-									   connectionId:message.connectionId];
+		key = [self keyForDelegateWithStreamId:message.streamId peerSocketId:message.peerSocketId connectionId:message.connectionId];
 	}
 
     id<ECSignalingChannelDelegate> signalingDelegate = nil;
@@ -398,14 +371,11 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
 
     [signalingDelegate signalingChannel:self didReceiveMessage:message];
     
-    if ([type isEqualToString:kEventSignalingMessagePeer] &&
-        message.peerSocketId && message.type == kECSignalingMessageTypeOffer) {
+    if ([type isEqualToString:kEventSignalingMessagePeer] &&  message.peerSocketId && message.type == kECSignalingMessageTypeOffer) {
         // FIXME: Looks like in P2P mode subscribe callback isn't called after attempt
         // to subscribe a stream, that's why sometimes signalingDelegate couldn't not yet exits
         [signalingDelegate signalingChannelDidOpenChannel:self];
-        [signalingDelegate signalingChannel:self
-                   readyToSubscribeStreamId:message.streamId
-                               peerSocketId:message.peerSocketId];
+        [signalingDelegate signalingChannel:self readyToSubscribeStreamId:message.streamId peerSocketId:message.peerSocketId];
     }
 }
 
