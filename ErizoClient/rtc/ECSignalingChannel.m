@@ -65,32 +65,12 @@ typedef void(^SocketIOCallback)(NSArray* data);
     NSURL *url = [NSURL URLWithString:urlString];
     L_INFO(@"Opening Websocket Connection... %@",urlString);
 
-//    socketIO = [[SocketIOClient alloc] initWithSocketURL:url
-//                                                  config:@{
-//														#ifdef DEBUG
-//														   @"log":@YES,
-//														#else
-//															@"log":@NO,
-//														#endif
-//                                                           @"forcePolling": @NO,
-//                                                           @"forceWebsockets": @YES,
-//                                                           @"secure": [NSNumber numberWithBool:secure],
-//                                                           @"reconnects": @NO,
-//														#ifdef BY_PASS_SELF_SIGN
-//                                                           @"selfSigned":@YES
-//														#endif
-//                                                         }];
      manager = [[SocketManager alloc] initWithSocketURL:url config:@{
                                                         #ifdef DEBUG
                                                            @"log":@YES,
                                                         #else
                                                             @"log":@NO,
                                                         #endif
-//                                                           @"tokenId":tokenId,
-//                                                           @"signature":signature,
-//                                                           @"transport":@"websocket",
-//                                                           @"EIO":@"3",
-//                                                           @"host":host,
                                                            @"singlePC":@YES,
                                                            @"forcePolling": @NO,
                                                            @"forceWebsockets": @YES,
@@ -234,7 +214,9 @@ typedef void(^SocketIOCallback)(NSArray* data);
     if (message.peerSocketId) {
         [data setObject:message.peerSocketId forKey:kEventKeyPeerSocketId];
     }
+    [data setObject:@"mozilla" forKey:@"browser"];
     [data setObject:messageDictionary forKey:@"msg"];
+
     [self send: @{@"options": data} name: @"connectionMessage"];
 }
 
@@ -255,6 +237,9 @@ typedef void(^SocketIOCallback)(NSArray* data);
     if (!options[@"state"]) {
         attributes[@"state"] = @"erizo";
     }
+
+    attributes[@"encryptTransport"] = @YES;
+    attributes[@"handlerProfile"] = [NSNull null];
     SocketIOCallback callback = [self onPublishCallback:delegate];
     [[self sendAck: @{@"options": attributes} name: @"publish"] timingOutAfter:10 callback:callback];
 }
