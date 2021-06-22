@@ -191,9 +191,11 @@ typedef void(^SocketIOCallback)(NSArray* data);
     if (message.peerSocketId) {
         [data setObject:message.peerSocketId forKey:kEventKeyPeerSocketId];
     }
-    if (message.streamId) {
-        [data setObject:message.streamId forKey:kEventKeyStreamId];
-    }
+//    if (message.streamId) {
+//        [data setObject:message.streamId forKey:kEventKeyStreamId];
+//    } else {
+//        NSLog(@"no stream id");
+//    }
     [data setObject:@"mozilla" forKey:@"browser"];
     [data setObject:messageDictionary forKey:@"msg"];
 
@@ -322,8 +324,10 @@ typedef void(^SocketIOCallback)(NSArray* data);
 }
 
 - (void)onSocketRemoveStream:(NSDictionary *)msg {
-    NSString *sId = [NSString stringWithFormat:@"%@", [msg objectForKey:@"id"]];
+    NSDictionary *data = [msg objectForKey:@"msg"];
+    NSString *sId = [NSString stringWithFormat:@"%@", [data objectForKey:@"id"]];
     [_roomDelegate signalingChannel:self didRemovedStreamId:sId];
+    NSAssert(sId != nil, @"stream id cannot be null");
 }
 
 - (void)onSocketDataStream:(NSDictionary *)msg {

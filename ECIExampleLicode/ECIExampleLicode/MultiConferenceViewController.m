@@ -115,8 +115,7 @@ static CGFloat vHeight = 120.0;
 }
 
 - (void)room:(ECRoom *)room didSubscribeStream:(ECStream *)stream {
-	[self showCallConnectViews:NO
-           updateStatusMessage:[NSString stringWithFormat:@"Subscribed: %@", stream.streamId]];
+	[self showCallConnectViews:NO updateStatusMessage:[NSString stringWithFormat:@"Subscribed: %@", stream.streamId]];
 
     // We have subscribed so let's watch the stream.
     [self watchStream:stream];
@@ -128,9 +127,7 @@ static CGFloat vHeight = 120.0;
 
 - (void)room:(ECRoom *)room didAddedStream:(ECStream *)stream {
     // We subscribe to all streams added.
-	[self showCallConnectViews:NO
-           updateStatusMessage:[NSString stringWithFormat:@"Subscribing stream: %@", stream.streamId]];
-
+	[self showCallConnectViews:NO updateStatusMessage:[NSString stringWithFormat:@"Subscribing stream: %@", stream.streamId]];
     [remoteRoom subscribe:stream];
 }
 
@@ -357,7 +354,6 @@ static CGFloat vHeight = 120.0;
 			break;
 		}
 	}
-	
 }
 
 - (void)viewDidLayoutSubviews {
