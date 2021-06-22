@@ -172,17 +172,10 @@
 }
 
 - (void)signalingChannel:(ECSignalingChannel *)signalingChannel readyToPublishStreamId:(NSString *)streamId peerSocketId:(NSString *)peerSocketId {
-
     _streamId = streamId;
     _peerSocketId = peerSocketId;
-
-    if (_peerSocketId) {
-        _isInitiator = NO;
-        [self startPublishSignaling];
-    } else {
-        _isInitiator = YES;
-        [self startPublishSignaling];
-    }
+    _isInitiator = peerSocketId == nil;
+    [self startPublishSignaling];
 }
 
 - (void)signalingChannelPublishFailed:(ECSignalingChannel *)signalingChannel {

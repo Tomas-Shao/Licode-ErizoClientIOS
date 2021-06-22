@@ -105,8 +105,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
 }
 
 - (void)unpublish {
-    [_signalingChannel unpublish:_publishStreamId
-        signalingChannelDelegate:publishClient];
+    [_signalingChannel unpublish:_publishStreamId signalingChannelDelegate:publishClient];
 }
 
 - (BOOL)subscribe:(ECStream *)stream {
@@ -259,7 +258,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
 }
 
 - (void)signalingChannel:(ECSignalingChannel *)channel didReceiveStreamIdReadyToPublish:(NSString *)streamId {
-    L_DEBUG(@"Room: didReceiveStreamIdReadyToPublish streamId: %@", streamId);
+    NSLog(@"[Room]: didReceiveStreamIdReadyToPublish streamId: %@", streamId);
     _publishStreamId = streamId;
     _publishStream.streamId = streamId;
 }
@@ -283,9 +282,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
     } else {
         ECStream *stream = [_streamsByStreamId objectForKey:streamId];
         if (!stream) {
-            stream = [[ECStream alloc] initWithStreamId:streamId
-                                             attributes:event.attributes
-                                       signalingChannel:_signalingChannel];
+            stream = [[ECStream alloc] initWithStreamId:streamId attributes:event.attributes signalingChannel:_signalingChannel];
             [_streamsByStreamId setObject:stream forKey:streamId];
         }
         [_delegate room:self didAddedStream:stream];

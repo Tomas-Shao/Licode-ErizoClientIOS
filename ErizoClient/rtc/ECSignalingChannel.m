@@ -278,9 +278,7 @@ typedef void(^SocketIOCallback)(NSArray* data);
 	}
 
 	NSError *error;
-	NSDictionary *messageDictionary = [NSJSONSerialization JSONObjectWithData:[message JSONData]
-                                                                          options:NSJSONReadingMutableContainers
-                                                                            error:&error];
+	NSDictionary *messageDictionary = [NSJSONSerialization JSONObjectWithData:[message JSONData] options:NSJSONReadingMutableContainers error:&error];
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 
 	[data setObject:@([message.streamId longLongValue]) forKey:@"id"];
@@ -315,8 +313,7 @@ typedef void(^SocketIOCallback)(NSArray* data);
 - (void)onSocketPublishMe:(NSDictionary *)msg {
     ECSignalingMessage *message = [ECSignalingMessage messageFromDictionary:msg];
     [_roomDelegate signalingChannel:self
-   didRequestPublishP2PStreamWithId:message.streamId
-                       peerSocketId:message.peerSocketId];
+   didRequestPublishP2PStreamWithId:message.streamId peerSocketId:message.peerSocketId];
 }
 
 - (void)onSocketAddStream:(NSDictionary *)msg {
@@ -425,8 +422,7 @@ typedef void(^SocketIOCallback)(NSArray* data);
 				[signalingDelegate signalingChannelPublishFailed:self];
 			}
 			if([_roomDelegate respondsToSelector:@selector(signalingChannel:didError:)]) {
-				[_roomDelegate signalingChannel:self
-                                       didError:[NSString stringWithFormat:@"%@", [argsData objectAtIndex:1]]];
+				[_roomDelegate signalingChannel:self didError:[NSString stringWithFormat:@"%@", [argsData objectAtIndex:1]]];
 			}
 			return;
 		}
@@ -555,12 +551,9 @@ typedef void(^SocketIOCallback)(NSArray* data);
         }
         
         if (!errorStr) {
-            [_roomDelegate signalingChannel:self didStartRecordingStreamId:streamId
-                            withRecordingId:recordingId
-                              recordingDate:recordingDate];
+            [_roomDelegate signalingChannel:self didStartRecordingStreamId:streamId withRecordingId:recordingId recordingDate:recordingDate];
         } else {
-            [_roomDelegate signalingChannel:self didFailStartRecordingStreamId:streamId
-                               withErrorMsg:errorStr];
+            [_roomDelegate signalingChannel:self didFailStartRecordingStreamId:streamId withErrorMsg:errorStr];
         }
     };
     return _cb;
@@ -577,14 +570,10 @@ typedef void(^SocketIOCallback)(NSArray* data);
 
 - (void)decodeToken:(NSString *)token {
     NSData *decodedData = [[NSData alloc] initWithBase64EncodedString:token options:0];
-	if(!decodedData) {
-		return;
-	}
+    NSAssert(decodedData != nil, @"decoded data cannot be null");
     NSError *jsonParseError = nil;
-    decodedToken = [NSJSONSerialization
-                    JSONObjectWithData:decodedData
-                    options:0
-                    error:&jsonParseError];
+    decodedToken = [NSJSONSerialization JSONObjectWithData:decodedData options:0 error:&jsonParseError];
+    NSAssert(jsonParseError == nil, @"decoded token parse with error");
 }
 
 - (void)removeSignalingDelegateForKey:(NSString *)key {
