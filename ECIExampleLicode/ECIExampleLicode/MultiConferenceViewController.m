@@ -70,7 +70,6 @@ static CGFloat vHeight = 120.0;
 - (void)initializeLocalStream {
     // Initialize a stream and access local stream
     localStream = [[ECStream alloc] initLocalStreamWithOptions:nil attributes:@{@"name":@"localStream", @"type":@"public"}];
-    localStream.streamId = @"324324324234324";
     
     // Render local stream
     if ([localStream hasVideo]) {
