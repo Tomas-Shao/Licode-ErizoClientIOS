@@ -69,11 +69,12 @@ static CGFloat vHeight = 120.0;
 
 - (void)initializeLocalStream {
     // Initialize a stream and access local stream
-    localStream = [[ECStream alloc] initLocalStreamWithOptions:nil attributes:@{@"name":@"localStream"}];
+    localStream = [[ECStream alloc] initLocalStreamWithOptions:nil attributes:@{@"name":@"localStream", @"type":@"public"}];
     
     // Render local stream
     if ([localStream hasVideo]) {
         RTCVideoTrack *videoTrack = [localStream.mediaStream.videoTracks objectAtIndex:0];
+        NSLog(@"[LocalStream]: %@", localStream.mediaStream.videoTracks);
         [videoTrack addRenderer:_localView];
     }
 }
@@ -94,10 +95,12 @@ static CGFloat vHeight = 120.0;
 						   @"type": @"public",
 						   };
     [localStream setAttributes:attributes];
-	//[localStream setSignalingChannel:remoteRoom.signalingChannel];
+//	[localStream setSignalingChannel:remoteRoom.signalingChannel];
 
 	// We get connected and ready to publish, so publish.
-//    [remoteRoom publish:localStream];
+    [remoteRoom publish:localStream];
+
+    NSAssert(localStream.streamId != nil, @"local stream cannot be null");
 
     // Subscribe all streams available in the room.
     for (ECStream *stream in remoteRoom.remoteStreams) {
@@ -107,13 +110,11 @@ static CGFloat vHeight = 120.0;
 
 - (void)room:(ECRoom *)room didPublishStream:(ECStream *)stream {
     [self.unpublishButton setTitle:@"UnPublish" forState:UIControlStateNormal];
-	[self showCallConnectViews:NO
-           updateStatusMessage:[NSString stringWithFormat:@"Published with ID: %@", stream.streamId]];
+	[self showCallConnectViews:NO updateStatusMessage:[NSString stringWithFormat:@"Published with ID: %@", stream.streamId]];
 }
 
 - (void)room:(ECRoom *)room didSubscribeStream:(ECStream *)stream {
-	[self showCallConnectViews:NO
-           updateStatusMessage:[NSString stringWithFormat:@"Subscribed: %@", stream.streamId]];
+	[self showCallConnectViews:NO updateStatusMessage:[NSString stringWithFormat:@"Subscribed: %@", stream.streamId]];
 
     // We have subscribed so let's watch the stream.
     [self watchStream:stream];
@@ -125,9 +126,7 @@ static CGFloat vHeight = 120.0;
 
 - (void)room:(ECRoom *)room didAddedStream:(ECStream *)stream {
     // We subscribe to all streams added.
-	[self showCallConnectViews:NO
-           updateStatusMessage:[NSString stringWithFormat:@"Subscribing stream: %@", stream.streamId]];
-
+	[self showCallConnectViews:NO updateStatusMessage:[NSString stringWithFormat:@"Subscribing stream: %@", stream.streamId]];
     [remoteRoom subscribe:stream];
 }
 
@@ -135,14 +134,11 @@ static CGFloat vHeight = 120.0;
 	[self removeStream:stream.streamId];
 }
 
-- (void)room:(ECRoom *)room didStartRecordingStream:(ECStream *)stream
-                                    withRecordingId:(NSString *)recordingId
-                                      recordingDate:(NSDate *)recordingDate {
+- (void)room:(ECRoom *)room didStartRecordingStream:(ECStream *)stream withRecordingId:(NSString *)recordingId recordingDate:(NSDate *)recordingDate {
     // TODO
 }
 
-- (void)room:(ECRoom *)room didFailStartRecordingStream:(ECStream *)stream
-                                           withErrorMsg:(NSString *)errorMsg {
+- (void)room:(ECRoom *)room didFailStartRecordingStream:(ECStream *)stream withErrorMsg:(NSString *)errorMsg {
     // TODO
 }
 
@@ -243,13 +239,12 @@ static CGFloat vHeight = 120.0;
                                        username:username
                                            role:kLicodePresenterRole
                                      completion:^(BOOL success, NSString *token) {
-                                         if (success) {
-                                            [remoteRoom connectWithEncodedToken:token];
-                                         } else {
-                                             [self showCallConnectViews:YES
-                                                    updateStatusMessage:@"Error!"];
-                                         }
-                                     }];
+        if (success) {
+            [remoteRoom connectWithEncodedToken:token];
+        } else {
+            [self showCallConnectViews:YES updateStatusMessage:@"Error!"];
+        }
+    }];
     /*
     Method 2.3: Create a Room and then create a Token.
 
@@ -358,7 +353,6 @@ static CGFloat vHeight = 120.0;
 			break;
 		}
 	}
-	
 }
 
 - (void)viewDidLayoutSubviews {
@@ -371,26 +365,9 @@ static CGFloat vHeight = 120.0;
     CGRect frame;
     CGFloat vOffset = 80.0;
     CGFloat margin = 20.0;
-    
-    switch (index) {
-        case 0:
-            frame = CGRectMake(margin, vOffset, vWidth, vHeight);
-            break;
-        case 1:
-            frame = CGRectMake(vWidth + margin * 2, vOffset, vWidth, vHeight);
-            break;
-        case 2:
-            frame = CGRectMake(margin, vOffset + vHeight + margin, vWidth, vHeight);
-            break;
-        case 3:
-            frame = CGRectMake(vWidth + margin * 2, vOffset + vHeight + margin, vWidth, vHeight);
-            break;
-        default:
-            [NSException raise:NSGenericException
-                        format:@"Sorry we allow only 4 streams on this example :)"];
-            break;
-    }
-    
+
+    frame = CGRectMake(vWidth * index + margin, vOffset + vHeight * index + margin, vWidth, vHeight);
+
     [playerView setFrame:frame];
 }
 

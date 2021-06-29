@@ -111,11 +111,13 @@
 - (RTCMediaStream *)createLocalStream {
     _mediaStream = [_peerFactory mediaStreamWithStreamId:@"LCMSv0"];
 
-    if ([(NSNumber *)[_streamOptions objectForKey:kStreamOptionVideo] boolValue])
+    if ([(NSNumber *)[_streamOptions objectForKey:kStreamOptionVideo] boolValue]) {
         [self generateVideoTracks];
+    }
 
-    if ([(NSNumber *)[_streamOptions objectForKey:kStreamOptionAudio] boolValue])
+    if ([(NSNumber *)[_streamOptions objectForKey:kStreamOptionAudio] boolValue]) {
         [self generateAudioTracks];
+    }
 
     return _mediaStream;
 }

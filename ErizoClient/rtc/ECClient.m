@@ -171,28 +171,17 @@
     [self setState:ECClientStateReady];
 }
 
-- (void)signalingChannel:(ECSignalingChannel *)signalingChannel
-  readyToPublishStreamId:(NSString *)streamId
-            peerSocketId:(NSString *)peerSocketId {
-
+- (void)signalingChannel:(ECSignalingChannel *)signalingChannel readyToPublishStreamId:(NSString *)streamId peerSocketId:(NSString *)peerSocketId {
     _streamId = streamId;
     _peerSocketId = peerSocketId;
-
-    if (_peerSocketId) {
-        _isInitiator = NO;
-        [self startPublishSignaling];
-    } else {
-        _isInitiator = YES;
-        [self startPublishSignaling];
-    }
+    _isInitiator = peerSocketId == nil;
+    [self startPublishSignaling];
 }
 
 - (void)signalingChannelPublishFailed:(ECSignalingChannel *)signalingChannel {
 }
 
-- (void)signalingChannel:(ECSignalingChannel *)channel
-readyToSubscribeStreamId:(NSString *)streamId
-            peerSocketId:(NSString *)peerSocketId {
+- (void)signalingChannel:(ECSignalingChannel *)channel readyToSubscribeStreamId:(NSString *)streamId peerSocketId:(NSString *)peerSocketId {
     _isInitiator = NO;
     _streamId = streamId;
     _peerSocketId = peerSocketId;
@@ -226,8 +215,7 @@ readyToSubscribeStreamId:(NSString *)streamId
 # pragma mark - RTCPeerConnectionDelegate
 #
 
-- (void)peerConnection:(RTCPeerConnection *)peerConnection
-          didAddStream:(nonnull RTCMediaStream *)stream {
+- (void)peerConnection:(RTCPeerConnection *)peerConnection didAddStream:(nonnull RTCMediaStream *)stream {
     dispatch_async(dispatch_get_main_queue(), ^{
         C_L_DEBUG(@"Received %lu video tracks and %lu audio tracks",
                   (unsigned long)stream.videoTracks.count,
@@ -242,16 +230,13 @@ readyToSubscribeStreamId:(NSString *)streamId
     C_L_DEBUG(@"Stream was removed.");
 }
 
-- (void)peerConnection:(RTCPeerConnection *)peerConnection
-                didChangeSignalingState:(RTCSignalingState)stateChanged {
+- (void)peerConnection:(RTCPeerConnection *)peerConnection didChangeSignalingState:(RTCSignalingState)stateChanged {
     dispatch_async(dispatch_get_main_queue(), ^{
         C_L_DEBUG(@"Signaling state changed: %d", stateChanged);
     });
 }
 
-- (void)peerConnection:(RTCPeerConnection *)peerConnection
-                                didChangeIceConnectionState:(RTCIceConnectionState)newState {
-
+- (void)peerConnection:(RTCPeerConnection *)peerConnection didChangeIceConnectionState:(RTCIceConnectionState)newState {
     dispatch_async(dispatch_get_main_queue(), ^{
         C_L_DEBUG(@"ICE state changed: %d", newState);
     
@@ -281,34 +266,24 @@ readyToSubscribeStreamId:(NSString *)streamId
     });
 }
 
-- (void)peerConnection:(RTCPeerConnection *)peerConnection
-                didChangeIceGatheringState:(RTCIceGatheringState)newState {
+- (void)peerConnection:(RTCPeerConnection *)peerConnection didChangeIceGatheringState:(RTCIceGatheringState)newState {
     dispatch_async(dispatch_get_main_queue(), ^{
-        C_L_DEBUG(@"ICE gathering state changed: %d", newState);
         if (newState == RTCIceGatheringStateComplete) {
 			[_signalingChannel drainMessageQueueForStreamId:_streamId peerSocketId:_peerSocketId connectionId:_connectionId];
         }
     });
 }
 
-- (void)peerConnection:(RTCPeerConnection *)peerConnection
-    didRemoveIceCandidates:(nonnull NSArray<RTCIceCandidate *> *)candidates {
+- (void)peerConnection:(RTCPeerConnection *)peerConnection didRemoveIceCandidates:(nonnull NSArray<RTCIceCandidate *> *)candidates {
     dispatch_async(dispatch_get_main_queue(), ^{
         C_L_DEBUG(@"Remove ICE candidates: %@", candidates);
     });
 }
 
 
-- (void)peerConnection:(RTCPeerConnection *)peerConnection
-    didGenerateIceCandidate:(nonnull RTCIceCandidate *)candidate {
+- (void)peerConnection:(RTCPeerConnection *)peerConnection didGenerateIceCandidate:(nonnull RTCIceCandidate *)candidate {
     dispatch_async(dispatch_get_main_queue(), ^{
-        C_L_DEBUG(@"Generated ICE candidate: %@", candidate);
-        ECICECandidateMessage *message =
-        [[ECICECandidateMessage alloc] initWithCandidate:candidate
-                                                streamId:_streamId
-												 erizoId:_erizoId
-											connectionId:_connectionId
-                                            peerSocketId:_peerSocketId];
+        ECICECandidateMessage *message = [[ECICECandidateMessage alloc] initWithCandidate:candidate streamId:_streamId erizoId:_erizoId connectionId:_connectionId peerSocketId:_peerSocketId];
         [_signalingChannel enqueueSignalingMessage:message];
     });
 }
@@ -373,9 +348,8 @@ readyToSubscribeStreamId:(NSString *)streamId
     _localStream = [self.delegate streamToPublishByAppClient:self];
     [_peerConnection addStream:_localStream];
     __weak ECClient *weakSelf = self;
-    [_peerConnection offerForConstraints:[self defaultOfferConstraints]
-                       completionHandler:^(RTCSessionDescription * _Nullable sdp, NSError * _Nullable error) {
-                           ECClient *strongSelf = weakSelf;
+    [_peerConnection offerForConstraints:[self defaultOfferConstraints] completionHandler:^(RTCSessionDescription * _Nullable sdp, NSError * _Nullable error) {
+        ECClient *strongSelf = weakSelf;
         [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
         if (error != nil) {
             NSLog(@"%@", error);
@@ -394,7 +368,7 @@ readyToSubscribeStreamId:(NSString *)streamId
 //    _peerConnection = [_factory peerConnectionWithConfiguration:config
 //                                                    constraints:constraints
 //                                                       delegate:self];
-    __weak ECClient *weakSelf = self;
+//    __weak ECClient *weakSelf = self;
     if (_peerSocketId) {
         [self drainMessageQueueIfReady];
     } else {
@@ -402,7 +376,7 @@ readyToSubscribeStreamId:(NSString *)streamId
 //        [_peerConnection offerForConstraints:[self defaultOfferConstraints]
 //                           completionHandler:^(RTCSessionDescription * _Nullable sdp, NSError * _Nullable error) {
 //                               ECClient *strongSelf = weakSelf;
-//                               [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
+//            [strongSelf peerConnection:strongSelf.peerConnection didCreateSessionDescription:sdp error:error];
 //            if (error != nil) {
 //                NSLog(@"%@", error);
 //            }
@@ -550,7 +524,6 @@ readyToSubscribeStreamId:(NSString *)streamId
                 [strongSelf.delegate appClient:strongSelf didError:error];
             }
         }];
-        
     });
 }
 
