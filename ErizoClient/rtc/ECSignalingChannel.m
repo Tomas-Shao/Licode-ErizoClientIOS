@@ -191,6 +191,11 @@ typedef void(^SocketIOCallback)(NSArray* data);
     if (message.peerSocketId) {
         [data setObject:message.peerSocketId forKey:kEventKeyPeerSocketId];
     }
+
+    if ([data[@"erizoId"] length] == 0) {
+        NSLog(@"cannot be null");
+    }
+
 //    if (message.streamId) {
 //        [data setObject:message.streamId forKey:kEventKeyStreamId];
 //    } else {
@@ -438,6 +443,10 @@ typedef void(^SocketIOCallback)(NSArray* data);
         signalingDelegate.streamId = streamId;
 		signalingDelegate.erizoId = erizoId;
 		signalingDelegate.connectionId = connectionId;
+
+        if ([erizoId length] == 0) {
+            NSLog(@"erizoId is null");
+        }
         
         // Keep track of an unique delegate for this stream id.
         [self setSignalingDelegate:signalingDelegate];
