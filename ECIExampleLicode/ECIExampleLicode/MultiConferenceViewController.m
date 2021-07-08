@@ -92,7 +92,7 @@ static CGFloat vHeight = 120.0;
     NSDictionary *attributes = @{
 						   @"name": kDefaultUserName,
 						   @"actualName": kDefaultUserName,
-						   @"type": @"public",
+						   @"type": @"publisher",
 						   };
     [localStream setAttributes:attributes];
 //	[localStream setSignalingChannel:remoteRoom.signalingChannel];
@@ -100,7 +100,7 @@ static CGFloat vHeight = 120.0;
 	// We get connected and ready to publish, so publish.
     [remoteRoom publish:localStream];
 
-    NSAssert(localStream.streamId != nil, @"local stream cannot be null");
+//    NSAssert(localStream.streamId != nil, @"local stream cannot be null");
 
     // Subscribe all streams available in the room.
     for (ECStream *stream in remoteRoom.remoteStreams) {
@@ -292,7 +292,7 @@ static CGFloat vHeight = 120.0;
 	NSDictionary *attributes = @{
 						   @"name": kDefaultUserName,
 						   @"actualName": kDefaultUserName,
-						   @"type": @"public",
+						   @"type": @"publisher",
 						   };
 	[localStream setAttributes:attributes];
 	

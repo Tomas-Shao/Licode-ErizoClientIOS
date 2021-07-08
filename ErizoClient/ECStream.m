@@ -23,6 +23,7 @@
                                                                         kStreamOptionAudio: @YES,
                                                                         kStreamOptionData: @YES,
                                                                         kStreamOptionLabel: @"LCMSv0",
+                                                                        @"state": @"erizo",
 																		kStreamOptionMuteStream: @{kStreamOptionAudio: @NO, kStreamOptionVideo: @NO},
 																		kStreamOptionMinVideoBW: [NSNumber numberWithInteger:300],
 																		kStreamOptionMaxVideoBW: [NSNumber numberWithInteger:1024]
