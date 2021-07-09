@@ -236,6 +236,8 @@
                      withObject:newMLine];
     
     NSString *mangledSdpString = [lines componentsJoinedByString:lineSeparator];
+    mangledSdpString = [mangledSdpString stringByReplacingOccurrencesOfString:@"a=mid:audio" withString:@"a=mid:0"];
+    mangledSdpString = [mangledSdpString stringByReplacingOccurrencesOfString:@"a=mid:video" withString:@"a=mid:1"];
     return [[RTCSessionDescription alloc] initWithType:description.type
                                                    sdp:mangledSdpString];
 }
