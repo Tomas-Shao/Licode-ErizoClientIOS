@@ -236,8 +236,9 @@
                      withObject:newMLine];
     
     NSString *mangledSdpString = [lines componentsJoinedByString:lineSeparator];
-    mangledSdpString = [mangledSdpString stringByReplacingOccurrencesOfString:@"a=mid:audio" withString:@"a=mid:0"];
-    mangledSdpString = [mangledSdpString stringByReplacingOccurrencesOfString:@"a=mid:video" withString:@"a=mid:1"];
+    mangledSdpString = [mangledSdpString stringByReplacingOccurrencesOfString:@"a=group:BUNDLE audio video" withString:@"a=group:BUNDLE 0 1"];
+    mangledSdpString = [mangledSdpString stringByReplacingOccurrencesOfString:@"a=mid:audio" withString:@"a=mid:0\r\na=msid:LCMSv0 0"];
+    mangledSdpString = [mangledSdpString stringByReplacingOccurrencesOfString:@"a=mid:video" withString:@"a=mid:1\r\na=msid:LCMSv0 1"];
     return [[RTCSessionDescription alloc] initWithType:description.type
                                                    sdp:mangledSdpString];
 }
