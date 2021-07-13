@@ -8,8 +8,11 @@
 
 @import WebRTC;
 #import "ECStream.h"
+#import "ErizoClient-Swift.h"
 
-@implementation ECStream
+@implementation ECStream {
+    VideoCaptureController *_videoCaptureController;
+}
 
 @synthesize signalingChannel = _signalingChannel;
 
@@ -28,6 +31,7 @@
 																		kStreamOptionMinVideoBW: [NSNumber numberWithInteger:300],
 																		kStreamOptionMaxVideoBW: [NSNumber numberWithInteger:1024]
                            }];
+        _videoCaptureController = [[VideoCaptureController alloc] init];
     }
     return self;
 }
@@ -175,14 +179,15 @@
 }
 
 - (BOOL)switchCamera {
-    RTCVideoSource* source = ((RTCVideoTrack*)[_mediaStream.videoTracks objectAtIndex:0]).source;
-    if ([source isKindOfClass:[RTCAVFoundationVideoSource class]]) {
-        RTCAVFoundationVideoSource* avSource = (RTCAVFoundationVideoSource*)source;
-        avSource.useBackCamera = !avSource.useBackCamera;
-        return YES;
-    } else {
-        return NO;
-    }
+//    RTCVideoSource* source = ((RTCVideoTrack*)[_mediaStream.videoTracks objectAtIndex:0]).source;
+//    if ([source isKindOfClass:[RTCAVFoundationVideoSource class]]) {
+//        RTCAVFoundationVideoSource* avSource = (RTCAVFoundationVideoSource*)source;
+//        avSource.useBackCamera = !avSource.useBackCamera;
+//        return YES;
+//    } else {
+//        return NO;
+//    }
+    return NO;
 }
 
 - (BOOL)hasAudio {
@@ -258,8 +263,14 @@
 - (RTCVideoTrack *)createLocalVideoTrack {
     RTCVideoTrack* localVideoTrack = nil;
 #if !TARGET_IPHONE_SIMULATOR && TARGET_OS_IPHONE
-    RTCAVFoundationVideoSource *source =
-    [_peerFactory avFoundationVideoSourceWithConstraints:_defaultVideoConstraints];
+//    RTCAVFoundationVideoSource *source =
+//    [_peerFactory avFoundationVideoSourceWithConstraints:_defaultVideoConstraints];
+//    localVideoTrack = [_peerFactory videoTrackWithSource:source trackId:kLicodeVideoLabel];
+
+    RTCVideoSource *source = [_peerFactory videoSource];
+    [source adaptOutputFormatToWidth: VideoCaptureController.outputSizeWidth height:VideoCaptureController.outputSizeHeight fps:VideoCaptureController.outputFrameRate];
+    _videoCaptureController.capturerDelegate = source;
+    [_videoCaptureController startCapture];
     localVideoTrack = [_peerFactory videoTrackWithSource:source trackId:kLicodeVideoLabel];
 #endif
     return localVideoTrack;
