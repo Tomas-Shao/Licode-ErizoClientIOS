@@ -186,7 +186,7 @@ static CGFloat vHeight = 120.0;
 
     // Initialize room (without token!)
     remoteRoom = [[ECRoom alloc] initWithDelegate:self
-                                   andPeerFactory:[[RTCPeerConnectionFactory alloc] init]];
+                                   andPeerFactory:[[RTCPeerConnectionFactory alloc] initWithEncoderFactory:[[RTCDefaultVideoEncoderFactory alloc] init] decoderFactory:[[RTCDefaultVideoDecoderFactory alloc] init]]];
 
     /*
 

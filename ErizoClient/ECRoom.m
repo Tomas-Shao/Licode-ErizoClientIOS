@@ -29,7 +29,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
 - (instancetype)init {
     if (self = [super init]) {
         if (!_peerFactory) {
-            _peerFactory = [[RTCPeerConnectionFactory alloc] init];
+            _peerFactory = [[RTCPeerConnectionFactory alloc] initWithEncoderFactory:[[RTCDefaultVideoEncoderFactory alloc] init] decoderFactory:[[RTCDefaultVideoDecoderFactory alloc] init]];
         }
         _recordEnabled = NO;
         _publishingStats = NO;

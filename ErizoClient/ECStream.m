@@ -56,7 +56,7 @@
                           videoConstraints:(RTCMediaConstraints *)videoConstraints
                           audioConstraints:(RTCMediaConstraints *)audioConstraints {
     if (self = [self init]) {
-        _peerFactory = [[RTCPeerConnectionFactory alloc] init];
+        _peerFactory = [[RTCPeerConnectionFactory alloc] initWithEncoderFactory:[[RTCDefaultVideoEncoderFactory alloc] init] decoderFactory:[[RTCDefaultVideoDecoderFactory alloc] init]];
         _defaultVideoConstraints = videoConstraints;
         _defaultAudioConstraints = audioConstraints;
         _isLocal = YES;
