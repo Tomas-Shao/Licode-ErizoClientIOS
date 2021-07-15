@@ -53,7 +53,7 @@
 - (instancetype)initWithDelegate:(id<ECClientDelegate>)delegate {
     if (self = [self init]) {
         _delegate = delegate;
-        _factory = [[RTCPeerConnectionFactory alloc] init];
+        _factory = [[RTCPeerConnectionFactory alloc] initWithEncoderFactory:[[RTCDefaultVideoEncoderFactory alloc] init] decoderFactory:[[RTCDefaultVideoDecoderFactory alloc] init]];
     }
     return  self;
 }
@@ -410,7 +410,7 @@
                                 preferredVideoCodec:[[self class] getPreferredVideoCodec]];
             
             newSDP = [self descriptionForDescription:newSDP bandwidthOptions:_clientOptions];
-            
+            NSLog(@"%@", newSDP);
             __weak ECClient *weakSelf = self;
             [_peerConnection setRemoteDescription:newSDP
                                 completionHandler:^(NSError * _Nullable error) {

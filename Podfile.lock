@@ -1,32 +1,32 @@
 PODS:
+  - GoogleWebRTC (1.1.31999)
   - OCHamcrest (6.1.1)
   - OCMockito (4.1.0):
     - OCHamcrest (~> 6.0)
-  - PodRTC (65.8.0.0)
   - Socket.IO-Client-Swift (15.0.0):
     - Starscream (~> 3.1)
   - Starscream (3.1.1)
 
 DEPENDENCIES:
+  - GoogleWebRTC
   - OCMockito (~> 4.0)
-  - PodRTC (= 65.8.0.0)
   - Socket.IO-Client-Swift (~> 15.0.0)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
+    - GoogleWebRTC
     - OCHamcrest
     - OCMockito
-    - PodRTC
     - Socket.IO-Client-Swift
     - Starscream
 
 SPEC CHECKSUMS:
+  GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   OCHamcrest: 363e1bf738c3e8a94abe7c2c415f70d671adde38
   OCMockito: bceefcd365252bcdf8b59c1b2bd23890805fc0d8
-  PodRTC: 561a2e8f05224f7ca3090dd27f507478337b12f4
   Socket.IO-Client-Swift: c039a808195d22a7192962841b8c035cb61ea49e
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
 
-PODFILE CHECKSUM: 2768d47f7311ec36c01075d65dac057e10d3587d
+PODFILE CHECKSUM: 3a41124c84463f3a1fb34218bde1d04e59c4dcd0
 
 COCOAPODS: 1.10.1

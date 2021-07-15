@@ -12,8 +12,8 @@
 #import "ECSignalingChannel.h"
 #import "ECSignalingMessage.h"
 
-static NSString * _Nonnull const kLicodeAudioLabel = @"LCMSa0";
-static NSString * _Nonnull const kLicodeVideoLabel = @"LCMSv0";
+static NSString * _Nonnull const kLicodeAudioLabel = @"0";
+static NSString * _Nonnull const kLicodeVideoLabel = @"1";
 
 /// Video option
 static NSString * _Nonnull const kStreamOptionVideo         = @"video";

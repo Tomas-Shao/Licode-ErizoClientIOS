@@ -11,7 +11,6 @@
 		781B3FED1E6DDEF2003782EE /* Nuve.m in Sources */ = {isa = PBXBuildFile; fileRef = 781B3FEB1E6DDEF2003782EE /* Nuve.m */; };
 		781B3FEE1E6DDEF3003782EE /* Nuve.h in Headers */ = {isa = PBXBuildFile; fileRef = 781B3FEC1E6DDEF2003782EE /* Nuve.h */; };
 		78621BEA1BD16D36009D4342 /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = 78621BE81BD16D36009D4342 /* Logger.m */; };
-		78CAB9701F21033D0052BCF1 /* libErizoClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78CAB96F1F21033D0052BCF1 /* libErizoClient.a */; };
 		78E53A171B99F388004B63EF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 78E53A161B99F388004B63EF /* main.m */; };
 		78E53A1A1B99F388004B63EF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 78E53A191B99F388004B63EF /* AppDelegate.m */; };
 		78E53A1D1B99F388004B63EF /* MultiConferenceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 78E53A1C1B99F388004B63EF /* MultiConferenceViewController.m */; };
@@ -21,6 +20,7 @@
 		78E53A341B99F388004B63EF /* ECIExampleLicodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 78E53A331B99F388004B63EF /* ECIExampleLicodeTests.m */; };
 		78E53A3F1B99F3EF004B63EF /* LicodeServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 78E53A3E1B99F3EF004B63EF /* LicodeServer.m */; };
 		78E53A431B9A0A2B004B63EF /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78E53A421B9A0A2B004B63EF /* libicucore.dylib */; };
+		80D9AA84269DD9CF0013278F /* libErizoClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D9AA83269DD9CF0013278F /* libErizoClient.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +72,7 @@
 		78E53A3D1B99F3EF004B63EF /* LicodeServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LicodeServer.h; sourceTree = "<group>"; };
 		78E53A3E1B99F3EF004B63EF /* LicodeServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LicodeServer.m; sourceTree = "<group>"; };
 		78E53A421B9A0A2B004B63EF /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
+		80D9AA83269DD9CF0013278F /* libErizoClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libErizoClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8B9640BB43255AF81F1E68D /* Pods-ECIExampleLicode.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ECIExampleLicode.release.xcconfig"; path = "../Pods/Target Support Files/Pods-ECIExampleLicode/Pods-ECIExampleLicode.release.xcconfig"; sourceTree = "<group>"; };
 		E61CB2E9CA28BE08F546E723 /* Pods_ECIExampleLicode.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ECIExampleLicode.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -81,9 +82,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				78CAB9701F21033D0052BCF1 /* libErizoClient.a in Frameworks */,
 				78E53A431B9A0A2B004B63EF /* libicucore.dylib in Frameworks */,
 				188231774C417852A166E892 /* Pods_ECIExampleLicode.framework in Frameworks */,
+				80D9AA84269DD9CF0013278F /* libErizoClient.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,6 +101,7 @@
 		0CA281946DDB2344CD137978 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				80D9AA83269DD9CF0013278F /* libErizoClient.a */,
 				78A8EF721F8F9DC100DE15E3 /* Pods_ErizoClientTests.framework */,
 				78CAB96F1F21033D0052BCF1 /* libErizoClient.a */,
 				78CA33C91F1FC2DF005BF042 /* libPods-ErizoClient.a */,
@@ -317,7 +319,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ECIExampleLicode/Pods-ECIExampleLicode-frameworks.sh",
-				"${PODS_ROOT}/PodRTC/WebRTC.framework",
+				"${PODS_ROOT}/GoogleWebRTC/Frameworks/frameworks/WebRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/Socket.IO-Client-Swift/SocketIO.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 			);
@@ -407,6 +409,7 @@
 		78E53A351B99F388004B63EF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -449,7 +452,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -461,6 +470,7 @@
 		78E53A361B99F388004B63EF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -496,7 +506,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
@@ -510,7 +526,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0AFC3F47948CBC54E4DB4FE1 /* Pods-ECIExampleLicode.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -545,7 +560,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B8B9640BB43255AF81F1E68D /* Pods-ECIExampleLicode.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
